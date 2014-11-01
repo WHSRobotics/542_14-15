@@ -3,7 +3,7 @@
 
 //cm
 float DIAMETER = 4.8;
-float ROBOT_RADIUS = 10; //arb
+float ROBOT_RADIUS = 10; //arbitrary
 float TW_X = 3; //arb
 float TW_Y = 3; //arb
 
@@ -20,7 +20,8 @@ task main()
 		int rotation = (initRotation * CONVERSION);
 		int dist = rotation * getCirc(4.8); */
 		float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI; //arc of tracking wheel (distance turned)
-		float dc = sqrt(pow(TW_X+ROBOT_RADIUS),2) + pow(TW_Y,2)); //radius between center and tracking wheel
+		float x = TW_X + ROBOT_RADIUS;
+		float dc = sqrt(pow(x,2) + pow(TW_Y,2)); //radius between center and tracking wheel
 		float arcR = ((arcT*ROBOT_RADIUS)/dc);
 	}
 }
