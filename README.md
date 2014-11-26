@@ -6,4 +6,6 @@
 Code for '14-'15 FTC Season Robot
 .
 
-drivers are by Xander Soldat. 
+- angle-encoder
+- drivers
+- tests 

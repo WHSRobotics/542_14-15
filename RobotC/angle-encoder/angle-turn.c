@@ -1,6 +1,6 @@
 #pragma config(Sensor, S1,     HTANG,               sensorI2CCustom)
 #include "C:\Documents and Settings\Teemo Time\My Documents\Github\542_14-15\RobotC\drivers\3.x\drivers\hitechnic-angle.h"
-// #include "C:\Documents and Settings\Teemo Time\My Documents\Github\542_14-15\RobotC\drivers\include\hitechnic-angle.h"
+// #include "C:\Documents and Settings\Teemo Time\My Documents\Github\542_14-15\RobotC\drivers\4.x\include\hitechnic-angle.h"
 
 //cm
 float DIAMETER = 4.8; //diameter of tracking wheel
@@ -12,8 +12,6 @@ float TW_Y = 3; //arb
 
 task main()
 {
-	clearTimer(T1);
-
 	while(true) {
 		/*
 		int initRotation = (HTANGreadAccumulatedAngle(HTANG)/360); //amount of rotations
