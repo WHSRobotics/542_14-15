@@ -29,9 +29,9 @@
 //clear variables regarding state required (instead of a flipstate) - state variables make position?
 
 //Amy! Look here! Look look look!
-//program pushers to be open
-//program beltGuardLift
-//program intake set servo
+//program pushers to be open 
+//program beltGuardLift done??? check for delay
+//program intake set servo check; add teleop drop down
 
 #include "JoystickDriver.c"
 
@@ -51,6 +51,10 @@ void servoInit()
 	servo[liftL] = 5;
 	servo[clampL] = 255;
 	servo[clampR] = 0;
+	servo[pushR] = initpos;//findoutdefault
+	servo[pushL] = initpos;//findoutdefault
+	servo[beltGuard] = initpos;//should be down
+	servo[intake] = initpos;//should be up
 }
 
 task lift()
@@ -78,6 +82,7 @@ task lift()
 			case true:
 				servo[liftR] = 50;
 				servo[liftL] = 220;
+				servo[beltGuard] = endpos;//arm up
 			break;
 
 			case false:
@@ -126,20 +131,23 @@ task push()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if (joy1Btn(02)&&plateOpen)
+		if(plateOpen)
 		{
-			clampDown = !clampDown
-			?true
-			:clampDown;
-			servo[pushL] = 75;
-			wait10Msec(10);
-			servo[pushR] = 175;
-		}
-		else
-		{
-			servo[pushR] = 5;
-			wait10Msec(10);
-			servo[pushL] = 235;
+			if (joy1Btn(02))
+			{
+				clampDown = !clampDown
+				?true
+				:clampDown;
+				servo[pushL] = 75;
+				wait10Msec(10);
+				servo[pushR] = 175;
+			}
+			else
+			{
+				servo[pushR] = 5;
+				wait10Msec(10);
+				servo[pushL] = 235;
+			}
 		}
 	}
 }
