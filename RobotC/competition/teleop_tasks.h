@@ -6,9 +6,16 @@
 #include "JoystickDriver.c"
 
 //FUNCTIONS
-float map(float rLower, float rUpper, float dLower, float dUpper, float dVal)
+float linMap(float rLower, float rUpper, float dLower, float dUpper, float dVal)
 {
 	return (dVal - dLower) * (rUpper - rLower) / (dUpper - dLower)+rLower;
+}
+
+float joyMap(int joyIn, int THRESH, float START_POW)
+{
+	return (abs(joyIn) > THRESH)
+	? ((100.0-START_POW)/16384.0 * sgn(joyIn) * joyIn) + (START_POW * sgn(joyIn))
+	: 0;
 }
 
 //TASKS
@@ -106,10 +113,8 @@ task servoPush()
 	}
 }
 
-
-float MOTORRIGHTRUN = joystick.joy1_y2*0.78125;													//
-float MOTORLEFTRUN = joystick.joy1_y1*0.78125;													//
-
+//DC Stuff
+/*
 task runIntakeBelt()
 {
 	if(joy1Btn(0))
@@ -157,26 +162,17 @@ task runGoalLift()
 		motor[motorGoalLift] = 0;
 	}
 }
+*/
 
-task runDriveTrain()
+task drive()
 {
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if(abs(joystick.joy1_y1) > 25 || abs(joystick.joy1_y2) > 25)
-		{
-			motor[driveTrainBR] = MOTORRIGHTRUN;
-			motor[driveTrainBL] = MOTORLEFTRUN;
-			motor[driveTrainTR] = MOTORRIGHTRUN;
-			motor[driveTrainTL] = MOTORLEFTRUN;
-		}
-		else
-		{
-			motor[driveTrainBR] = 0;
-			motor[driveTrainBL] = 0;
-			motor[driveTrainTR] = 0;
-			motor[driveTrainTL] = 0;
-		}
+		motor[driveLF] = joyMap(joystick.joy1_y1, 5, 20.0);
+		motor[driveLB] = joyMap(joystick.joy1_y1, 5, 20.0);
+		motor[driveRF] = joyMap(joystick.joy1_y2, 5, 20.0);
+		motor[driveRB] = joyMap(joystick.joy1_y2, 5, 20.0);
 	}
 }
 
