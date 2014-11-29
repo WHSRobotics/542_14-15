@@ -1,75 +1,18 @@
 #ifndef TELEOP_TASKS.H;
 #define TELEOP_TASKS.H;
+
+//INCLUDES
+#include "all_globVars.h"
 #include "JoystickDriver.c"
 
-float heading = integratedGyroVal;
-float distance = angleSensorval;
-
-void stopDrive()
-{
-	motor[LF] = 0;
-	motor[LB] = 0;
-	motor[RF] = 0;
-	motor[RB] = 0;
-}
-
-void driveSetFor(int speedLeft, int speedRight, int timeSec)
-{
-	motor[LF] = speedLeft;
-	motor[LB] = speedLeft;
-	motor[RF] = speedRight;
-	motor[RB] = speedRight;
-}
-
-void moveStraight(float distCm, int speed)
-{ 
-	if(abs(heading) != 0)
-	{
-	}
-	else
-	{
-	}
-}
-
-void moveArc(float radians, float radiusCm, int speed)
-{
-}
-
-void move(float radOrDistCm, float radiusCm, int speed)
-{
-	if(radiusCm == 0)
-	{
-	}
-	else if(abs(radiusCm) == halfWidth)
-	{
-	}
-	else
-	{
-	}
-}
-
-void robotExpand()
-{
-}
-
+//FUNCTIONS
 float map(float rLower, float rUpper, float dLower, float dUpper, float dVal)
 {
 	return (dVal - dLower) * (rUpper - rLower) / (dUpper - dLower)+rLower;
 }
 
-void servoInit()
-{
-	servo[liftR] = 255;
-	servo[liftL] = 5;
-	servo[clampL] = 255;
-	servo[clampR] = 0;
-	servo[pushR] = initpos;//findoutdefault
-	servo[pushL] = initpos;//findoutdefault
-	servo[beltGuard] = initpos;//should be down
-	servo[intake] = initpos;//should be up
-}
-
-task lift()
+//TASKS
+task servoLift()
 {
 	while(true)
 	{
@@ -105,8 +48,7 @@ task lift()
 	}
 }
 
-
-task clamp()
+task servoClamp()
 {
 	while(true)
 	{
@@ -138,7 +80,7 @@ task clamp()
 	}
 }
 
-task push()
+task servoPush()
 {
 	while(true)
 	{
@@ -163,6 +105,7 @@ task push()
 		}
 	}
 }
+
 
 float MOTORRIGHTRUN = joystick.joy1_y2*0.78125;													//
 float MOTORLEFTRUN = joystick.joy1_y1*0.78125;													//
