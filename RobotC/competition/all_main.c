@@ -32,15 +32,12 @@
 
 void initializeRobot()
 {
-	/*servo[liftR] = 255;
-	servo[liftL] = 5;
 	servo[clampL] = 255;
 	servo[clampR] = 0;
-	servo[pushR] = initpos;//findoutdefault
-	servo[pushL] = initpos;//findoutdefault
-	servo[beltGuard] = initpos;//should be down
-	servo[intake] = initpos;//should be up
-	*/
+	servo[pushR] = 130;
+	servo[pushL] = 75;
+	servo[beltGuard] = 255;
+	servo[intake] = 0;
 
 	/*muxUpdateInterval = 1;
 	servoChangeRate[] = 0;
@@ -62,14 +59,16 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	//startTark(servoLift);
-	//startTark(servoClamp);
-	//startTark(servoPush);
-
+	startTask(DCGoalLift);
+	startTask(DCTubeLift);
+	startTask(DCBelt);
 	startTask(drive);
-	//startTask(runGoalLift);
-	//startTask(raiseTubeLifts);
-	//startTask(runIntakeBelt);
-	while(true)
-	{}
+
+	startTask(servoLift);
+	startTask(servoClamp);
+	while(!joy1Btn(01)){}
+	wait10Msec(100);
+	startTask(servoPush);
+
+	while(true){}
 }
