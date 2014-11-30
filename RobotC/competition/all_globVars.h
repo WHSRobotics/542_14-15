@@ -6,4 +6,6 @@ bool toggleClamp = false;
 bool plateOpen = false;
 bool clampDown = false;
 
+const int JOY_THRESH = 16;
+
 #endif;

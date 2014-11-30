@@ -11,10 +11,10 @@ float linMap(float rLower, float rUpper, float dLower, float dUpper, float dVal)
 	return (dVal - dLower) * (rUpper - rLower) / (dUpper - dLower)+rLower;
 }
 
-float joyMap(int joyIn, int THRESH, float START_POW)
+float joyMap(int joyIn, int THRESH)
 {
 	return (abs(joyIn) > THRESH)
-	? ((100.0-START_POW)/16384.0 * sgn(joyIn) * pow(joyIn,2)) + (START_POW * sgn(joyIn))
+	? (100.0/16384.0 * sgn(joyIn) * pow(joyIn,2))
 	: 0;
 }
 
@@ -44,7 +44,7 @@ task servoLift()
 			case true:
 				servo[liftR] = 50;
 				servo[liftL] = 220;
-				//servo[beltGuard] = endpos;//arm up
+				servo[beltGuard] = 0;
 			break;
 
 			case false:
@@ -86,6 +86,7 @@ task servoClamp()
 		}
 	}
 }
+
 
 task servoPush()
 {
@@ -169,8 +170,8 @@ task drive()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[driveL] = joyMap(joystick.joy1_y1, 5, 20.0);
-		motor[driveR] = joyMap(joystick.joy1_y2, 5, 20.0);
+		motor[driveL] = joyMap(joystick.joy1_y1, JOY_THRESH);
+		motor[driveR] = joyMap(joystick.joy1_y2, JOY_THRESH);
 	}
 }
 
