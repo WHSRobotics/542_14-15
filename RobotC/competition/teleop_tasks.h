@@ -45,6 +45,7 @@ task servoLift()
 				servo[liftR] = 50;
 				servo[liftL] = 220;
 				servo[beltGuard] = 0;
+				servo[intake] = 200;
 			break;
 
 			case false:
@@ -115,55 +116,55 @@ task servoPush()
 }
 
 //DC Stuff
-/*
-task runIntakeBelt()
+
+task DCBelt()
 {
-	if(joy1Btn(0))
+	while(true)
 	{
-		motor[motorIntake] = 100;
-	}
-	else if(joy1Btn(1))
-	{
-		motor[motorIntake] = -100;
-	}
-	else
-	{
-		motor[motorIntake] = 0;
+		getJoystickSettings(joystick);
+		motor[runBelt] = (joy1Btn(06))
+		? 100
+		: (joy1Btn(08))
+		? -100
+		: 0;
 	}
 }
 
-task raiseTubeLifts()
+task DCTubeLift()
 {
-	if(joy1Btn(6))
+	while(true)
 	{
-		motor[motorTubeLifts] = 100;
-	}
-	else if(joy1Btn(8))
-	{
-		motor[motorTubeLifts] = -100;
-	}
-	else
-	{
-		motor[motorTubeLifts] = 0;
+		getJoystickSettings(joystick);
+		motor[tubeLift] = (joy1Btn(05))
+		? 100
+		: (joy1Btn(07))
+		? -100
+		: 0;
 	}
 }
 
-task runGoalLift()
+task DCGoalLift()
 {
-	if(joy1Btn(7))
+	while(true)
 	{
-		motor[motorGoalLift] = 100;
-	}
-	else if(joy1Btn(9))
-	{
-		motor[motorGoalLift] = -100;
-	}
-	else
-	{
-		motor[motorGoalLift] = 0;
+		getJoystickSettings(joystick);
+		motor[goalLift] = (joystick.joy1_TopHat == 0)
+		? 100
+		: (joystick.joy1_TopHat == 4)
+		? -100
+		: 0;
 	}
 }
-*/
+
+//tube tilt
+
+//dino head task needed
+//expand order
+//head lift and tube lift simultaneously
+//raise goal lift a bit
+//open plate
+
+//backward drive
 
 task drive()
 {
