@@ -19,12 +19,12 @@ float joyMap(int joyIn, int THRESH)
 }
 
 //TASKS
-task servoLift()
+task servoPlate()
 {
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if(joy1Btn(01))
+		if(joy1Btn(01)&&headUp)
 		{
 			if(!togglePlate)
 			{
@@ -53,14 +53,7 @@ task servoLift()
 				servo[liftL] = 5;
 			break;
 		}
-	}
-}
-
-task servoClamp()
-{
-	while(true)
-	{
-		getJoystickSettings(joystick);
+		//
 		if(joy1Btn(03)&&plateOpen)
 		{
 			if(!toggleClamp)
@@ -117,20 +110,7 @@ task servoPush()
 
 //DC Stuff
 
-task DCBelt()
-{
-	while(true)
-	{
-		getJoystickSettings(joystick);
-		motor[runBelt] = (joy1Btn(06))
-		? 100
-		: (joy1Btn(08))
-		? -100
-		: 0;
-	}
-}
-
-task DCTubeLift()
+task DCControl()
 {
 	while(true)
 	{
@@ -140,14 +120,20 @@ task DCTubeLift()
 		: (joy1Btn(07))
 		? -100
 		: 0;
-	}
-}
-
-task DCGoalLift()
-{
-	while(true)
-	{
-		getJoystickSettings(joystick);
+		motor[runBelt] = (joy1Btn(06))
+		? 100
+		: (joy1Btn(08))
+		? -100
+		: 0;
+		if(joy1Btn(10))
+		{
+			headUp = true;
+		}
+		if(headUp)
+		{
+			servo[headL] = 20;
+			servo[headR] = 230;
+		}
 		motor[goalLift] = (joystick.joy1_TopHat == 0)
 		? 100
 		: (joystick.joy1_TopHat == 4)
@@ -158,13 +144,13 @@ task DCGoalLift()
 
 //tube tilt
 
-//dino head task needed
 //expand order
 //head lift and tube lift simultaneously
 //raise goal lift a bit
 //open plate
 
 //backward drive
+//prioritization
 
 task drive()
 {

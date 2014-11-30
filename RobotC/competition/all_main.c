@@ -22,7 +22,7 @@
 #pragma config(Servo,  srvo_S1_C2_6,    servo12,              tServoNone)
 #pragma config(Servo,  srvo_S1_C3_1,    beltGuard,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    headR,                tServoStandard)
-#pragma config(Servo,  srvo_S1_C3_3,    headR,                tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_3,    headL,                tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_4,    servo16,              tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo17,              tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo18,              tServoNone)
@@ -32,13 +32,16 @@
 
 void initializeRobot()
 {
+	servo[liftR] = 255;
+	servo[liftL] = 5;
 	servo[clampL] = 255;
 	servo[clampR] = 0;
 	servo[pushR] = 130;
 	servo[pushL] = 75;
 	servo[beltGuard] = 255;
 	servo[intake] = 0;
-
+	servo[headL] = 150;
+	servo[headR] = 90;
 	/*muxUpdateInterval = 1;
 	servoChangeRate[] = 0;
 	servoChangeRate[] = 0;
@@ -59,15 +62,13 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	startTask(DCGoalLift);
-	startTask(DCTubeLift);
-	startTask(DCBelt);
+	startTask(DCControl);
 	startTask(drive);
+	startTask(servoPlate);
 
-	startTask(servoLift);
-	startTask(servoClamp);
+	while(!headUp){}
 	while(!joy1Btn(01)){}
-	wait10Msec(100);
+	wait10Msec(200);
 	startTask(servoPush);
 
 	while(true){}
