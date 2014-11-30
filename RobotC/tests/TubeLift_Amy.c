@@ -38,23 +38,23 @@ task main()
 	servo[liftL] = 5;
 	servo[clampL] = 255;
 	servo[clampR] = 0;
-	while(true)
+	while(true) //infinate loop
 	{
-		getJoystickSettings(joystick);
-		if(joy1Btn(01))
+		getJoystickSettings(joystick); //gets joystick settings
+		if(joy1Btn(01))//if button 1 is pressed...
 		{
 			if(!togglePlate)
 			{
 				if(plateOpen)
 				{
-					servo[clampL] = 255;
-					servo[clampR] = 0;
-					servo[liftR] = 255;
-					servo[liftL] = 5;
+					servo[clampL] = 255; //clampL will be at the 255 position
+					servo[clampR] = 0; //clampR will be at the 0 position
+					servo[liftR] = 255; //liftR will be a the 255 position
+					servo[liftL] = 5; //liftL will be at the 5 position 
 				}
-				else
+				else //if not...
 				{
-					servo[liftR] = 50;
+					servo[liftR] = 50;//the liftR, liftL, clampL, and clampR will be set to the default 
 					servo[liftL] = 220;
 					servo[clampL] = 0;
 					servo[clampR] = 255;
@@ -67,7 +67,7 @@ task main()
 		{
 			togglePlate = false;
 		}
-		if (joy1Btn(03)||joy1Btn(02))
+		if (joy1Btn(03)||joy1Btn(02))//if the button 3 or button 2 are pressed, then clampL will be at 0 position and clampR 255 (the clamp servos will make the clamps go up 
 		{
 			if(!toggleClamp)
 			{
@@ -76,7 +76,7 @@ task main()
 					servo[clampL] = 0;
 					servo[clampR] = 255;
 				}
-				else
+				else //if the buttons aren't pushed, then the servos will remain at their default positions
 				{
 					servo[clampL] = 255;
 					servo[clampR] = 0;
@@ -89,7 +89,7 @@ task main()
 		{
 			toggleClamp = false;
 		}
-		if (joy1Btn(02))
+		if (joy1Btn(02))//if button 2 is pushed, then the servo: pushR is at the position 175 and pushL is at the position 75 which has the push servos go in
 		{
 			if(clampDown)
 			{
@@ -98,7 +98,7 @@ task main()
 			servo[pushR] = 175;
 			servo[pushL] = 75;
 		}
-		else
+		else//the servos will be at the default position
 		{
 			servo[pushR] = 5;
 			servo[pushL] = 235;
