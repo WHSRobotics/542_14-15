@@ -42,18 +42,6 @@ void initializeRobot()
 	servo[intake] = 0;
 	servo[headL] = 150;
 	servo[headR] = 90;
-	/*muxUpdateInterval = 1;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;
-	servoChangeRate[] = 0;*/
-
 	return;
 }
 
