@@ -49,7 +49,7 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-
+	nMotorEncoder[tubeLift] = 0;
 	startTask(DCControl);
 	startTask(drive);
 	startTask(servoPlate);
@@ -60,6 +60,5 @@ task main()
 	startTask(servoPush);
 	//R: 112, L: 70 tall tube
 	//R: 135, L: 95 mid tube
-
 	while(true){}
 }

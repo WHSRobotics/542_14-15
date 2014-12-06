@@ -9,4 +9,8 @@ bool headUp = false;
 
 const int JOY_THRESH = 16;
 
+//auto program
+const float motorEncoderRot = 1120.0;
+const float deltaT = 0.02;
+
 #endif;

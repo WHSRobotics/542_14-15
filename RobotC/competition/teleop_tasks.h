@@ -24,7 +24,7 @@ task servoPlate()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if(joy1Btn(01)&&headUp)
+		if(joy1Btn(03)&&headUp)
 		{
 			if(!togglePlate)
 			{
@@ -54,7 +54,7 @@ task servoPlate()
 			break;
 		}
 		//
-		if(joy1Btn(03)&&plateOpen)
+		if(joy1Btn(01)&&plateOpen)
 		{
 			if(!toggleClamp)
 			{
@@ -89,7 +89,7 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy1Btn(02))
+			if (joy1Btn(04))
 			{
 				clampDown = !clampDown
 				?true
@@ -115,7 +115,7 @@ task DCControl()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[tubeLift] = (joy1Btn(05))
+		motor[goalLift] = (joy1Btn(05))
 		? 100
 		: (joy1Btn(07))
 		? -100
@@ -134,11 +134,14 @@ task DCControl()
 			servo[headL] = 20;
 			servo[headR] = 230;
 		}
-		motor[goalLift] = (joystick.joy1_TopHat == 0)
-		? 100
-		: (joystick.joy1_TopHat == 4)
-		? -100
-		: 0;
+		if(joy1Btn(02))
+		{
+			while(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot)) // Values need to be changed
+			{
+				motor[tubeLift] = 100;
+			}
+			motor[tubeLift] = 0;
+		}
 	}
 }
 

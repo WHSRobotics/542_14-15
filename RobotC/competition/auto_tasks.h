@@ -2,67 +2,45 @@
 #define AUTO_TASKS.H;
 
 #include "all_globVars.h"
+#include "hitechnic-gyro.h"
+#include "hitechnic-sensormux.h"
+#include "hitechnic-angle.h"
+#include "hitechnic-compass.h"
+
+//odometry based control - position changes - velocity changes
+//gyro based control - angular velocity
+//encoder based control - position changes of each side - velocity of motors
+//compass based control -
 
 float heading = integratedGyroVal;
 float distance = angleSensorval;
 
-void robotExpand()
-{
-	
-}
-
 void stopDrive()
 {
-	motor[L] = 0;
-	motor[R] = 0;
+	motor[driveL] = 0;
+	motor[driveR] = 0;
 }
 
-void driveSetFor(int speedLeft, int speedRight, int timeSec)
+void resetEncoders()
 {
-	motor[L] = speedLeft;
-	motor[R] = speedRight;
+	nMotorEncoder[driveL] = 0;
+	nMotorEncoder[driveR] = 0;
 }
 
 void moveStraight(float distCm, int speed)
-{ 
-	if(abs(heading) != 0)
+{
+	resetEncoders();
+	while(true)
 	{
-	}
-	else
-	{
-		motor[L] = speed;
-		motor[R] = speed;
+
 	}
 }
 
-void moveArc(float radians, float radiusCm, int speed)
+void moveArc(float radians, float radiusCm)
 {
-}
-
-void move(float radOrDistCm, float radiusCm, int speed)
-{
-	if(radiusCm == 0)
+	resetEncoders();
+	while(true)
 	{
-		motor[L] = speed;
-		motor[R] = -speed;
-	}
-	else if(abs(radiusCm) == halfWidth)
-	{
-		if(radiusCm <= 0 && radiusCm >= -halfWidth)
-		{
-			motor[L] = 0;
-			motor[R] = speed;
-		}
-		else if(radiusCm >= 0 && radiusCm <= halfWidth)
-		{
-			motor[L] = speed;
-			motor[R] = 0;
-		}
-	}
-	else
-	{
-		motor[L] = speed;
-		motor[R] = speed;
 	}
 }
 
