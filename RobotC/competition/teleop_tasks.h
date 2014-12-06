@@ -50,8 +50,8 @@ task servoPlate()
 				switch(tiltState)
 				{
 					case 2:
-						servo[liftR] = 112;
-						servo[liftL] = 70;
+						servo[liftR] = 115;
+						servo[liftL] = 65;
 						//tall
 					break;
 
@@ -92,13 +92,13 @@ task servoPlate()
 		switch(clampDown)
 		{
 			case true:
-				servo[clampL] = 0;
-				servo[clampR] = 255;
+				servo[clampL] = 145;
+				servo[clampR] = 105;
 			break;
 
 			case false:
-				servo[clampL] = 255;
-				servo[clampR] = 0;
+				servo[clampL] = 0;
+				servo[clampR] = 255;
 			break;
 		}
 	}

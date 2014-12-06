@@ -34,8 +34,8 @@ void initializeRobot()
 {
 	servo[liftR] = 255;
 	servo[liftL] = 5;
-	servo[clampL] = 255;
-	servo[clampR] = 0;
+	servo[clampL] = 0;
+	servo[clampR] = 255;
 	servo[pushR] = 130;
 	servo[pushL] = 75;
 	servo[beltGuard] = 255;
@@ -49,6 +49,7 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
+
 	nMotorEncoder[tubeLift] = 0;
 	startTask(DCControl);
 	startTask(drive);
@@ -60,6 +61,6 @@ task main()
 
 	while(true)
 	{
-		writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
+		//writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
 	}
 }
