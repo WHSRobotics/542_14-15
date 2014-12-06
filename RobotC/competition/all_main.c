@@ -54,10 +54,12 @@ task main()
 	startTask(drive);
 	startTask(servoPlate);
 
-	while(!headUp){}
-	while(!joy1Btn(01)){}
+	while(!joy1Btn(03)){}
 	wait10Msec(200);
 	startTask(servoPush);
 
-	while(true){}
+	while(true)
+	{
+		writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
+	}
 }

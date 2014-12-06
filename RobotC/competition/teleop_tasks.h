@@ -24,7 +24,7 @@ task servoPlate()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if(joy1Btn(03)&&headUp)
+		if(joy1Btn(03))
 		{
 			if(!togglePlate)
 			{
@@ -157,12 +157,12 @@ task DCControl()
 		{
 			if(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot)) // Values need to be changed
 			{
-				motor[tubeLift] = 100;
+				motor[tubeLift] = 750;
 			}
-			else
-			{
-				motor[tubeLift] = 0;
-			}
+		}
+		else
+		{
+			motor[tubeLift] = 0;
 		}
 	}
 }
