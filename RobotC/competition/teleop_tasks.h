@@ -142,8 +142,6 @@ task DCControl()
 	}
 }
 
-//tube tilt
-
 //expand order
 //head lift and tube lift simultaneously
 //raise goal lift a bit

@@ -58,6 +58,8 @@ task main()
 	while(!joy1Btn(01)){}
 	wait10Msec(200);
 	startTask(servoPush);
+	//R: 112, L: 70 tall tube
+	//R: 135, L: 95 mid tube
 
 	while(true){}
 }
