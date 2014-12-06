@@ -32,7 +32,16 @@ void moveStraight(float distCm, int speed)
 	resetEncoders();
 	while(true)
 	{
-
+		if(abs(nMotorEncoder[driveL]) <= distCm * CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
+		{
+			motor[driveR] = speed;
+			motor[driveL] = speed;
+		}
+		else
+		{
+			motor[driveR] = 0;
+			motor[driveL] = 0;
+		}
 	}
 }
 
@@ -43,5 +52,25 @@ void moveArc(float radians, float radiusCm)
 	{
 	}
 }
+
+void moveSpin(float distCm, int speed)
+{
+	resetEncoders();
+	while(true)
+	{
+		if(abs(nMotorEncoder[driveL]) <= distCm *CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
+		{
+			motor[driveR] = speed;		//Spins left if speed input is positive
+			motor[driveL] = -speed;		//Spins right if speed input is negative
+		}
+		else
+		{
+			motor[driveR] = 0;
+			motor[driveL] = 0;
+		}
+	}
+}
+
+
 
 #endif
