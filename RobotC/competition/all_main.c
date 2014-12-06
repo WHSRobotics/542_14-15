@@ -4,7 +4,7 @@
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_2,     motorG,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, driveRight)
 #pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, driveLeft)
@@ -58,7 +58,6 @@ task main()
 	while(!joy1Btn(01)){}
 	wait10Msec(200);
 	startTask(servoPush);
-	//R: 112, L: 70 tall tube
-	//R: 135, L: 95 mid tube
+
 	while(true){}
 }

@@ -29,6 +29,7 @@ task servoPlate()
 			if(!togglePlate)
 			{
 				plateOpen = !plateOpen;
+				headUp = true;
 				clampDown = plateOpen
 				?true
 				:false;
@@ -39,11 +40,33 @@ task servoPlate()
 		{
 			togglePlate = false;
 		}
+		if((joystick.joy1_TopHat < 3) && (joystick.joy1_TopHat > -1))
+		{
+			tiltState = joystick.joy1_TopHat;
+		}
 		switch(plateOpen)
 		{
 			case true:
-				servo[liftR] = 50;
-				servo[liftL] = 220;
+				switch(tiltState)
+				{
+					case 2:
+						servo[liftR] = 112;
+						servo[liftL] = 70;
+						//tall
+					break;
+
+					case 1:
+						servo[liftR] = 50;
+						servo[liftL] = 220;
+						//level
+					break;
+
+					case 0:
+						servo[liftR] = 135;
+						servo[liftL] = 95;
+						//mid
+					break;
+				}
 				servo[beltGuard] = 0;
 				servo[intake] = 200;
 			break;
@@ -53,7 +76,7 @@ task servoPlate()
 				servo[liftL] = 5;
 			break;
 		}
-		//
+
 		if(joy1Btn(01)&&plateOpen)
 		{
 			if(!toggleClamp)
@@ -125,10 +148,6 @@ task DCControl()
 		: (joy1Btn(08))
 		? -100
 		: 0;
-		if(joy1Btn(10))
-		{
-			headUp = true;
-		}
 		if(headUp)
 		{
 			servo[headL] = 20;
@@ -136,11 +155,14 @@ task DCControl()
 		}
 		if(joy1Btn(02))
 		{
-			while(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot)) // Values need to be changed
+			if(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot)) // Values need to be changed
 			{
 				motor[tubeLift] = 100;
 			}
-			motor[tubeLift] = 0;
+			else
+			{
+				motor[tubeLift] = 0;
+			}
 		}
 	}
 }

@@ -7,6 +7,8 @@ bool plateOpen = false;
 bool clampDown = false;
 bool headUp = false;
 
+int tiltState = 1;
+
 const int JOY_THRESH = 16;
 
 //auto program
