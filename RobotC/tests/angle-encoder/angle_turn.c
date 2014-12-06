@@ -1,5 +1,5 @@
 #pragma config(Sensor, S1,     HTANG,               sensorI2CCustom)
-#include "C:\Documents and Settings\Teemo Time\My Documents\Github\542_14-15\RobotC\drivers\3.x\drivers\hitechnic-angle.h"
+#include "hitechnic-angle.h"
 // #include "C:\Documents and Settings\Teemo Time\My Documents\Github\542_14-15\RobotC\drivers\4.x\include\hitechnic-angle.h"
 
 //cm
