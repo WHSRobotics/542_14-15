@@ -12,8 +12,10 @@
 //encoder based control - position changes of each side - velocity of motors
 //compass based control -
 
-float heading = integratedGyroVal;
-float distance = angleSensorval;
+//float heading = integratedGyroVal;
+//float distance = angleSensorval;
+
+float DIAMETER = 4.8
 
 void stopDrive()
 {
@@ -27,8 +29,12 @@ void resetEncoders()
 	nMotorEncoder[driveR] = 0;
 }
 
-void moveStraight(float distCm, int speed)
+void moveStraight(int speed)
 {
+	while(true)
+	{
+		float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
+	/*
 	resetEncoders();
 	while(true)
 	{
@@ -42,7 +48,8 @@ void moveStraight(float distCm, int speed)
 			motor[driveR] = 0;
 			motor[driveL] = 0;
 		}
-	}
+	*/
+}
 }
 
 void moveArc(float radians, float radiusCm)
@@ -55,7 +62,8 @@ void moveArc(float radians, float radiusCm)
 
 void moveSpin(float distCm, int speed)
 {
-	resetEncoders();
+
+	/*resetEncoders();
 	while(true)
 	{
 		if(abs(nMotorEncoder[driveL]) <= distCm *CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
@@ -69,6 +77,8 @@ void moveSpin(float distCm, int speed)
 			motor[driveL] = 0;
 		}
 	}
+	*/
+
 }
 
 

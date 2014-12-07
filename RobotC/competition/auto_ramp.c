@@ -1,5 +1,6 @@
 #pragma config(Hubs,  S1, HTServo,  HTServo,  HTServo,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S4,     HTANG,               sensorI2CCustom)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
@@ -38,14 +39,17 @@ task main()
 {
 	while(true)
 	{
-		moveStraight(175.5901293, 100); 	//Encoder value should be 6161.331
+		/*moveStraight(175.5901293, 100); 	//Encoder value should be 6161.331
 		moveSpin(28.42748652, 100); 				//It turns left with a positive speed, 90 degrees(in radians) * 7.125(half the width of the robot)
 		moveStraight(19.59401913, 100); 	//Encoder value should be 687.54
 		moveSpin(28.42748652, -100);				//It turns right with a negative speed
 		moveStraight(187.7785531, 100); 	//Encoder value should be 6589.014
 		moveSpin(18.95165768, -100); 			//Turns right at 60 degrees
 		moveStraight(117.5657193, 100); 	//Encoder value should be 4125.2963
+		servo[clampL] = 145;
+		servo[clampR] = 105;
 		moveSpin(99.49620283, -100); 			//Turns right at about 315 degrees
 		moveStraight(293.9142996, 100); 	//Encoder value should be 10313.2408
+		*/
 	}
 }
