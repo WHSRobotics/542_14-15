@@ -24,5 +24,7 @@ bool joy2Active = false;
 const float CM_ENCODERVALUE = 35.089279; //The encoder value of the andymark motor[1120]/10.16cm * pi[3.14159...]
 const float motorEncoderRot = 1120.0;
 const float deltaT = 0.02;
-const float DIAMETER = 4.8
+const float ANG_CONV = 4.8 * PI/600.0;
+const float ENC_RAD = 11.605;
+
 #endif;

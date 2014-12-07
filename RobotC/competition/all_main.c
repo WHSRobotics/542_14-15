@@ -1,8 +1,6 @@
 #pragma config(Hubs,  S1, HTServo,  HTServo,  HTServo,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S4,     gyro,           sensorI2CHiTechnicGyro)
+#pragma config(Sensor, S4,     HTANG,          sensorI2CCustom)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed, encoder)
@@ -62,7 +60,7 @@ task main()
 	startTask(drive);
 	startTask(servoPlate);
 
-	while(!joy2Btn(03)){} 
+	while(!joy2Btn(03)){}
 	wait10Msec(200); //Allows ample time for initialization before setting idle push servo position
 	startTask(servoPush);
 

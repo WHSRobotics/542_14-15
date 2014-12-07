@@ -2,18 +2,12 @@
 #define AUTO_TASKS.H;
 
 #include "all_globVars.h"
-#include "hitechnic-gyro.h"
-#include "hitechnic-sensormux.h"
 #include "hitechnic-angle.h"
-#include "hitechnic-compass.h"
 
 //odometry based control - position changes - velocity changes
 //gyro based control - angular velocity
 //encoder based control - position changes of each side - velocity of motors
 //compass based control -
-
-//float heading = integratedGyroVal;
-//float distance = angleSensorval;
 
 void stopDrive()
 {
@@ -21,18 +15,17 @@ void stopDrive()
 	motor[driveR] = 0;//driveR motor is at 0 power
 }
 
-void resetEncoders()//reseting encoders
+void resetEncoder()//reseting encoders
 {
-	nMotorEncoder[driveL] = 0;
-	nMotorEncoder[driveR] = 0;
+	HTANGresetAccumulatedAngle(HTANG);
 }
 
 void moveStraight(float distCm, int speed)
 {
-	float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
+	float distCmActual = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
 	while(true)
 	{
-		if(distCm >= arcT)
+		if(distCm >= distCmActual)
 		{
 			motor[driveR] = speed;
 			motor[driveL] = speed;
@@ -62,15 +55,12 @@ void moveStraight(float distCm, int speed)
 
 void moveArc(float radians, float radiusCm)
 {
-	resetEncoders(); //resets encoders
-	while(true)
-	{
-	}
+	resetEncoders();
 }
 
 void moveSpin(float distCm, int speed)
 {
-	float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
+	float distActual = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
 	while(true)
 	{
 		if(distCm >= arcT)
