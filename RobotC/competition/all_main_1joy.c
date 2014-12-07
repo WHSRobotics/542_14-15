@@ -2,9 +2,8 @@
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S4,     gyro,           sensorI2CHiTechnicGyro)
-#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_2,     motorG,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, driveRight)
@@ -56,7 +55,7 @@ task main()
 	startTask(drive);
 	startTask(servoPlate);
 
-	while(!joy2Btn(03)){}
+	while(!joy1Btn(03)){}
 	wait10Msec(200);
 	startTask(servoPush);
 
