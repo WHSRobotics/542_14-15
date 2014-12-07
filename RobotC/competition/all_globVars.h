@@ -3,8 +3,8 @@
 
 bool togglePlate = false;
 bool toggleAngle = false;
-bool toggleTilt = false;
 bool toggleClamp = false;
+bool toggleTilt = false;
 
 bool plateOpen = false;
 bool clampDown = false;
@@ -12,6 +12,7 @@ bool headUp = false;
 
 int plateAngleState = 0;
 int tiltState = 0;
+int tiltGain = 5;
 
 const int JOY_THRESH = 16;
 

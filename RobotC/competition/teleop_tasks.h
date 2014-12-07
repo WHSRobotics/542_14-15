@@ -52,7 +52,7 @@ task servoPlate()
 		{
 			if(!toggleAngle)
 			{
-				plateAngleState = ((plateAngleState+1)%3);
+				plateAngleState = ((plateAngleState+1)%4);
 			}
 			toggleAngle = true;
 		}
@@ -68,8 +68,6 @@ task servoPlate()
 				tiltState = (sgn(tiltState) != sgn(4-joystick.joy2_TopHat))
 				?tiltState + 4 - joystick.joy2_TopHat
 				:tiltState;
-				//tiltState -2, 0, 2
-				//4-tophat -2, 2
 			}
 			toggleTilt = true;
 		}
@@ -83,21 +81,26 @@ task servoPlate()
 			case true:
 				switch(plateAngleState)
 				{
-					case 1:
-						servo[liftR] = 115 + 2*tiltState;
-						servo[liftL] = 65 + 2*tiltState ;
-						//tall
-					break;
-
 					case 0:
-						servo[liftR] = 50 + 2*tiltState;
-						servo[liftL] = 220 + 2*tiltState;
+						servo[liftR] = 50 + tiltState * tiltGain;
+						servo[liftL] = 220 + tiltState * tiltGain;
 						//level
 					break;
 
+					case 1:
+						servo[liftR] = 85 + tiltState * tiltGain;
+						servo[liftL] = 185 + tiltState * tiltGain;
+					break;
+
 					case 2:
-						servo[liftR] = 135 + 2*tiltState;
-						servo[liftL] = 95 + 2*tiltState;
+						servo[liftR] = 120 + tiltState * tiltGain;
+						servo[liftL] = 150 + tiltState * tiltGain;
+						//tall
+					break;
+
+					case 3:
+						servo[liftR] = 135 + tiltState * tiltGain;
+						servo[liftL] = 135 + tiltState * tiltGain;
 						//mid
 					break;
 				}
@@ -146,7 +149,7 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy2Btn(04))
+			if (joy2Btn(05))
 			{
 				clampDown = !clampDown
 				?true
@@ -172,9 +175,9 @@ task DCControl()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[goalLift] = joy2Btn(05)
+		motor[goalLift] = joy2Btn(06)
 		? 100
-		: joy2Btn(07)
+		: joy2Btn(08)
 		? -75
 		: 0;
 		motor[runBelt] = (joy1Btn(06))
@@ -189,7 +192,7 @@ task DCControl()
 		}
 		if(joy1Btn(02)&&joy2Btn(02))
 		{
-			if(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot)) // Values need to be changed
+			if(abs(nMotorEncoder[tubeLift]) < (5.0 * motorEncoderRot))
 			{
 				motor[tubeLift] = 75;
 			}
@@ -200,14 +203,6 @@ task DCControl()
 		}
 	}
 }
-
-//expand order
-//head lift and tube lift simultaneously
-//raise goal lift a bit
-//open plate
-
-//backward drive
-//prioritization
 
 void checkActive(int THRESH)
 {
@@ -237,13 +232,21 @@ task drive()
 		checkActive(JOY_THRESH);
 		if(joy1Active)
 		{
-			motor[driveL] = joyMapLin(joystick.joy1_y1, JOY_THRESH);
-			motor[driveR] = joyMapLin(joystick.joy1_y2, JOY_THRESH);
+			if(joy1Btn(05))
+			{
+				motor[driveL] = joyMapLin(0.35*joystick.joy1_y1, 5);
+				motor[driveR] = joyMapLin(0.35*joystick.joy1_y2, 5);
+			}
+			else
+			{
+				motor[driveL] = joyMapLin(joystick.joy1_y1, JOY_THRESH);
+				motor[driveR] = joyMapLin(joystick.joy1_y2, JOY_THRESH);
+			}
 		}
 		else if(joy2Active)
 		{
-			motor[driveL] = joyMapLin(-joystick.joy2_y2, JOY_THRESH);
-			motor[driveR] = joyMapLin(-joystick.joy2_y1, JOY_THRESH);
+			motor[driveL] = joyMapLin(-joystick.joy2_y2 * 0.35, 5);
+			motor[driveR] = joyMapLin(-joystick.joy2_y1 * 0.35, 5);
 		}
 		else
 		{
