@@ -43,10 +43,13 @@ task main()
 	moveSpin(PI/2, 100);
 	moveStraight(187.7785531, 0, 0);
 	moveSpin(PI/3, 100);
+	moveStraight(117.5657193, 0, 0);
 	servo[clampL] = 145;
 	servo[clampR] = 105;
 	moveSpin((7 * PI)/4, 100);
 	moveStraight(293.9142996, 0, 0);
+	motor[runBelt] = 100;
+	wait10Msec(100);
 
 		/*moveStraight(175.5901293, 100); 	//Encoder value should be 6161.331
 		moveSpin(28.42748652, 100); 				//It turns left with a positive speed, 90 degrees(in radians) * 7.125(half the width of the robot)
