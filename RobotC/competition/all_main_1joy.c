@@ -30,7 +30,7 @@
 
 #include "teleop_tasks.h"
 
-void initializeRobot()
+void initializeRobot() //default values of the the servos
 {
 	servo[liftR] = 255;
 	servo[liftL] = 5;
@@ -47,19 +47,19 @@ void initializeRobot()
 
 task main()
 {
-	initializeRobot();
-	waitForStart();
+	initializeRobot(); //puts the servos in their default positions
+	waitForStart(); //waits for start
 
-	nMotorEncoder[tubeLift] = 0;
-	startTask(DCControl);
-	startTask(drive);
-	startTask(servoPlate);
+	nMotorEncoder[tubeLift] = 0; // the encoder for tubeLift dosn't move
+	startTask(DCControl);//starts DCControl task
+	startTask(drive); //starts drive task
+	startTask(servoPlate); //starts servoPlate task
 
-	while(!joy1Btn(03)){}
-	wait10Msec(200);
-	startTask(servoPush);
+	while(!joy1Btn(03)){}//when button 3 is pressed on the first joystick,
+	wait10Msec(200);//robot waits 20 seconds
+	startTask(servoPush);//starts servoPush task
 
-	while(true)
+	while(true)//infinate loop
 	{
 		//writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
 	}
