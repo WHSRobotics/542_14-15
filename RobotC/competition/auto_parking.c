@@ -38,13 +38,13 @@ task main()
 	while(true)
 	{
 		moveStraight(60.73428911, 100);		//Encoder value should be 2411.83663319
-		moveSpin(distCm, -100);						//Turn right
+		moveSpin(28.42748652, -100);			//Turn right
 		moveStraight(19.59401913, 100);		//Encoder value should be 687.54
-		moveSpin(distCm, 100);						//Turn left
+		moveSpin(28.42748652, 100);				//Turn left
 		moveStraight(273.8585782, 100); 	//Encoder value should be 9609.45
-		moveSpin(distCm, -100);						//Turn right
+		moveSpin(18.95165768, -100);			//Turn right
 		moveStraight(117.5657193, 100); 	//Encoder value should be 4125.2963
-		moveSpin(distCm, -100); 					//Turns right at about 315 degrees
+		moveSpin(99.49620283, -100); 			//Turns right at about 315 degrees
 		moveStraight(293.9142996, 100); 	//Encoder value should be 10313.2408
 	}
 }
