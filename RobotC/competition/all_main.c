@@ -31,7 +31,7 @@
 
 #include "teleop_tasks.h"
 
-void initializeRobot()
+void initializeRobot() //default servo positions were found experimentally
 {
 	servo[liftR] = 255;
 	servo[liftL] = 5;
@@ -62,12 +62,9 @@ task main()
 	startTask(drive);
 	startTask(servoPlate);
 
-	while(!joy2Btn(03)){}
-	wait10Msec(200);
+	while(!joy2Btn(03)){} 
+	wait10Msec(200); //Allows ample time for initialization before setting idle push servo position
 	startTask(servoPush);
 
-	while(true)
-	{
-		writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
-	}
+	while(true){}
 }

@@ -17,11 +17,11 @@ float distance = angleSensorval;
 
 void stopDrive()
 {
-	motor[driveL] = 0;
-	motor[driveR] = 0;
+	motor[driveL] = 0;//driveL motor is at 0 power
+	motor[driveR] = 0;//driveR motor is at 0 power
 }
 
-void resetEncoders()
+void resetEncoders()//reseting encoders
 {
 	nMotorEncoder[driveL] = 0;
 	nMotorEncoder[driveR] = 0;
@@ -29,25 +29,25 @@ void resetEncoders()
 
 void moveStraight(float distCm, int speed)
 {
-	resetEncoders();
+	resetEncoders();//reseting encoders
 	while(true)
 	{
 		if(abs(nMotorEncoder[driveL]) <= distCm * CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
 		{
-			motor[driveR] = speed;
-			motor[driveL] = speed;
+			motor[driveR] = speed; //spins left if speed input is positive
+			motor[driveL] = speed;//spins right if speed input is positive
 		}
 		else
 		{
-			motor[driveR] = 0;
-			motor[driveL] = 0;
+			motor[driveR] = 0; // doesn't do anything if the speed input is negative or 0
+			motor[driveL] = 0; // doesn't do anything if the speed input is negative or 0
 		}
 	}
 }
 
 void moveArc(float radians, float radiusCm)
 {
-	resetEncoders();
+	resetEncoders(); //resets encoders
 	while(true)
 	{
 	}
@@ -55,7 +55,7 @@ void moveArc(float radians, float radiusCm)
 
 void moveSpin(float distCm, int speed)
 {
-	resetEncoders();
+	resetEncoders(); // resets encoders
 	while(true)
 	{
 		if(abs(nMotorEncoder[driveL]) <= distCm *CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
@@ -65,8 +65,8 @@ void moveSpin(float distCm, int speed)
 		}
 		else
 		{
-			motor[driveR] = 0;
-			motor[driveL] = 0;
+			motor[driveR] = 0;		//spins nowhere if speed input is negative or 0
+			motor[driveL] = 0;		//spins nowhere if speed input is negative or 0
 		}
 	}
 }

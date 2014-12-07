@@ -39,14 +39,13 @@ task main()
 	while(true)
 	{
 		moveStraight(175.5901293, 100); 	//Encoder value should be 6161.331
-		moveSpin(distCm, 100); 						//Distance values need to change
-																			//It turns left with a positive speed
-		moveStraight{19.59401913, 100); 	//Encoder value should be 687.54
-		moveSpin(distCm, -100);			//It turns right with a negative speed
+		moveSpin(28.42748652, 100); 				//It turns left with a positive speed, 90 degrees(in radians) * 7.125(half the width of the robot)
+		moveStraight(19.59401913, 100); 	//Encoder value should be 687.54
+		moveSpin(28.42748652, -100);				//It turns right with a negative speed
 		moveStraight(187.7785531, 100); 	//Encoder value should be 6589.014
-		moveSpin(distCm, -100); 		//Turns right at 45 degrees
+		moveSpin(18.95165768, -100); 			//Turns right at 60 degrees
 		moveStraight(117.5657193, 100); 	//Encoder value should be 4125.2963
-		moveSpin(distCm, -100); 		//Turns right at about 315 degrees
+		moveSpin(99.49620283, -100); 			//Turns right at about 315 degrees
 		moveStraight(293.9142996, 100); 	//Encoder value should be 10313.2408
 	}
 }
