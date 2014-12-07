@@ -46,12 +46,18 @@ void initializeRobot()
 	return;
 }
 
+//expand order
+//head lift and tube lift simultaneously
+//raise goal lift a bit
+//open plate
+
+nMotorEncoder[tubeLift] = 0;
+
 task main()
 {
 	initializeRobot();
 	waitForStart();
 
-	nMotorEncoder[tubeLift] = 0;
 	startTask(DCControl);
 	startTask(drive);
 	startTask(servoPlate);
@@ -62,6 +68,6 @@ task main()
 
 	while(true)
 	{
-		//writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
+		writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
 	}
 }

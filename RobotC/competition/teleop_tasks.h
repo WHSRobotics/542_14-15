@@ -61,43 +61,26 @@ task servoPlate()
 			toggleAngle = false;
 		}
 
-		if(abs(4-joystick.joy2_TopHat) == 2)
-		{
-			if(!toggleTilt)
-			{
-				tiltState = (sgn(tiltState) != sgn(4-joystick.joy2_TopHat))
-				?tiltState + 4 - joystick.joy2_TopHat
-				:tiltState;
-				//tiltState -2, 0, 2
-				//4-tophat -2, 2
-			}
-			toggleTilt = true;
-		}
-		else
-		{
-			toggleTilt = false;
-		}
-
 		switch(plateOpen)
 		{
 			case true:
 				switch(plateAngleState)
 				{
 					case 1:
-						servo[liftR] = 115 + 2*tiltState;
-						servo[liftL] = 65 + 2*tiltState ;
+						servo[liftR] = 115;
+						servo[liftL] = 65;
 						//tall
 					break;
 
 					case 0:
-						servo[liftR] = 50 + 2*tiltState;
-						servo[liftL] = 220 + 2*tiltState;
+						servo[liftR] = 50;
+						servo[liftL] = 220;
 						//level
 					break;
 
 					case 2:
-						servo[liftR] = 135 + 2*tiltState;
-						servo[liftL] = 95 + 2*tiltState;
+						servo[liftR] = 135;
+						servo[liftL] = 95;
 						//mid
 					break;
 				}
@@ -146,7 +129,7 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy2Btn(04))
+			if (joy2Btn(05))
 			{
 				clampDown = !clampDown
 				?true
@@ -172,9 +155,9 @@ task DCControl()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[goalLift] = joy2Btn(05)
+		motor[goalLift] = joy2Btn(06)
 		? 100
-		: joy2Btn(07)
+		: joy2Btn(08)
 		? -75
 		: 0;
 		motor[runBelt] = (joy1Btn(06))
@@ -200,14 +183,6 @@ task DCControl()
 		}
 	}
 }
-
-//expand order
-//head lift and tube lift simultaneously
-//raise goal lift a bit
-//open plate
-
-//backward drive
-//prioritization
 
 void checkActive(int THRESH)
 {
@@ -235,15 +210,23 @@ task drive()
 	{
 		getJoystickSettings(joystick);
 		checkActive(JOY_THRESH);
-		if(joy1Active)
+		if(joy1Active && (!joy2Btn(07)))
 		{
-			motor[driveL] = joyMapLin(joystick.joy1_y1, JOY_THRESH);
-			motor[driveR] = joyMapLin(joystick.joy1_y2, JOY_THRESH);
+			if(joy1Btn(05))
+			{
+				motor[driveL] = joyMapLin(0.5*joystick.joy1_y1, 0.5 * JOY_THRESH);
+				motor[driveR] = joyMapLin(0.5*joystick.joy1_y2, 0.5 * JOY_THRESH);
+			}
+			else
+			{
+				motor[driveL] = joyMapLin(joystick.joy1_y1, JOY_THRESH);
+				motor[driveR] = joyMapLin(joystick.joy1_y2, JOY_THRESH);
+			}
 		}
 		else if(joy2Active)
 		{
-			motor[driveL] = joyMapLin(-joystick.joy2_y2, JOY_THRESH);
-			motor[driveR] = joyMapLin(-joystick.joy2_y1, JOY_THRESH);
+			motor[driveL] = joyMapLin(-joystick.joy2_y2 * 0.5, JOY_THRESH * 0.5);
+			motor[driveR] = joyMapLin(-joystick.joy2_y1 * 0.5, JOY_THRESH * 0.5);
 		}
 		else
 		{
