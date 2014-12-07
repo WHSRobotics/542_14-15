@@ -15,8 +15,6 @@
 //float heading = integratedGyroVal;
 //float distance = angleSensorval;
 
-float DIAMETER = 4.8
-
 void stopDrive()
 {
 	motor[driveL] = 0;//driveL motor is at 0 power
@@ -29,9 +27,23 @@ void resetEncoders()//reseting encoders
 	nMotorEncoder[driveR] = 0;
 }
 
-void moveStraight(int speed)
+void moveStraight(float distCm, int speed)
 {
-
+	float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
+	while(true)
+	{
+		if(distCm >= arcT)
+		{
+			motor[driveR] = speed;
+			motor[driveL] = speed;
+		}
+		else
+		{
+			motor[driveR] = 0;
+			motor[driveL] = 0;
+		}
+	}
+	/*
 	while(true)
 	{
 		if(abs(nMotorEncoder[driveL]) <= distCm * CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
@@ -44,8 +56,8 @@ void moveStraight(int speed)
 			motor[driveR] = 0; // doesn't do anything if the speed input is negative or 0
 			motor[driveL] = 0; // doesn't do anything if the speed input is negative or 0
 		}
-
-}
+	}
+	*/
 }
 
 void moveArc(float radians, float radiusCm)
@@ -58,7 +70,21 @@ void moveArc(float radians, float radiusCm)
 
 void moveSpin(float distCm, int speed)
 {
-
+	float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI;
+	while(true)
+	{
+		if(distCm >= arcT)
+		{
+			motor[driveR] = speed;
+			motor[driveL] = -speed;
+		}
+		else
+		{
+			motor[driveR] = 0;
+			motor[driveL] = 0;
+		}
+	}
+	/*
 	while(true)
 	{
 		if(abs(nMotorEncoder[driveL]) <= distCm *CM_ENCODERVALUE || abs(nMotorEncoder[driveR]) <= distCm * CM_ENCODERVALUE)
@@ -72,6 +98,7 @@ void moveSpin(float distCm, int speed)
 			motor[driveL] = 0;		//spins nowhere if speed input is negative or 0
 		}
 	}
+	*/
 
 
 }
