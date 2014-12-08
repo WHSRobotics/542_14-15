@@ -48,11 +48,14 @@ task servoPlate()
 			togglePlate = false;
 		}
 
-		if(joystick.joy2_TopHat == 0)
+		//Edit
+		if(abs(2-joystick.joy2_TopHat) == 2)
 		{
 			if(!toggleAngle)
 			{
-				plateAngleState = ((plateAngleState+1)%4);
+				plateAngleState = ((plateAngleState + sgn(2-joystick.joy2_TopHat)) < 0)
+				?plateAngleState
+				:plateAngleState + sgn(2-joystick.joy2_TopHat);
 			}
 			toggleAngle = true;
 		}
@@ -60,13 +63,14 @@ task servoPlate()
 		{
 			toggleAngle = false;
 		}
+		//End edit
 
 		if(abs(4-joystick.joy2_TopHat) == 2)
 		{
 			if(!toggleTilt)
 			{
 				tiltState = (sgn(tiltState) != sgn(4-joystick.joy2_TopHat))
-				?tiltState + 4 - joystick.joy2_TopHat
+				?tiltState + sgn(4 - joystick.joy2_TopHat)
 				:tiltState;
 			}
 			toggleTilt = true;
@@ -79,31 +83,8 @@ task servoPlate()
 		switch(plateOpen)
 		{
 			case true:
-				switch(plateAngleState)
-				{
-					case 0:
-						servo[liftR] = 50 + tiltState * tiltGain;
-						servo[liftL] = 220 + tiltState * tiltGain;
-						//level
-					break;
-
-					case 1:
-						servo[liftR] = 85 + tiltState * tiltGain;
-						servo[liftL] = 185 + tiltState * tiltGain;
-					break;
-
-					case 2:
-						servo[liftR] = 120 + tiltState * tiltGain;
-						servo[liftL] = 150 + tiltState * tiltGain;
-						//tall
-					break;
-
-					case 3:
-						servo[liftR] = 135 + tiltState * tiltGain;
-						servo[liftL] = 135 + tiltState * tiltGain;
-						//mid
-					break;
-				}
+				servo[liftR] = 50 + (plateAngleState * angleGain) + (tiltState * tiltGain);
+				servo[liftL] = 220 - (plateAngleState * angleGain) + (tiltState * tiltGain);
 				servo[beltGuard] = 0;
 				servo[intake] = 200;
 			break;
@@ -111,6 +92,8 @@ task servoPlate()
 			case false:
 				servo[liftR] = 255;
 				servo[liftL] = 5;
+				plateAngleState = 0;
+				tiltState = 0;
 			break;
 		}
 
@@ -228,11 +211,23 @@ task drive()
 {
 	while(true)
 	{
+		if(joy1Btn(05))
+		{
+			if(!toggleSlo)
+			{
+				sloMo = !sloMo;
+			}
+			toggleSlo = true;
+		}
+		else
+		{
+			toggleSlo = false;
+		}
 		getJoystickSettings(joystick);
 		checkActive(JOY_THRESH);
 		if(joy1Active)
 		{
-			if(joy1Btn(05))
+			if(sloMo)
 			{
 				motor[driveL] = joyMapLin(0.35*joystick.joy1_y1, 5);
 				motor[driveR] = joyMapLin(0.35*joystick.joy1_y2, 5);

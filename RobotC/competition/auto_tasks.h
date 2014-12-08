@@ -2,6 +2,7 @@
 #define AUTO_TASKS.H;
 
 #include "all_globVars.h"
+#include "JoystickDriver.c"
 #include "hitechnic-angle.h"
 
 //odometry based control - position changes - velocity changes
@@ -28,6 +29,21 @@ void stopDrive()
 {
 	motor[driveL] = 0;//driveL motor is at 0 power
 	motor[driveR] = 0;//driveR motor is at 0 power
+	wait10Msec(125);
+}
+
+void raiseTubes()
+{
+	motor[tubeLift] = 75;
+	wait10Msec(700);
+	motor[tubeLift] = 0;
+}
+
+void scoreBall()
+{
+	motor[runBelt] = 100;
+	wait10Msec(250);
+	motor[runBelt] = 0;
 }
 
 void moveStraight(float distCm, int speedL, int speedR)

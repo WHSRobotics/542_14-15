@@ -29,7 +29,6 @@
 
 #include "teleop_tasks.h"
 #include "auto_tasks.h"
-#include "JoystickDriver.c"
 
 ///////Moving from the parking zone///////
 
@@ -38,10 +37,24 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	motor[tubeLift] = 75;
-	wait10Msec(350);
-	motor[tubeLift] = 0;
-	//moveStraight(13,-50, -70);
-	//stopDrive();//119.5
-	//moveSpin(-PI/2, 50);
+	/*startTask(DCControl);
+	startTask(servoPlate);
+
+	while(!joy2Btn(03)){}
+	wait10Msec(120);
+	startTask(servoPush);*/
+
+	raiseTubes();
+	moveStraight(40, 50, 70);
+	moveSpin(-PI/2,20);
+
+	moveStraight(130, 30, 40);
+	moveSpin(PI/4, 20);
+
+	moveStraight(30, 30, 40);
+	//move forward, grab goal, clamp and adjust
+	moveSpin(11.0/12.0*PI, 50);
+
+	//back to goal
+	moveStraight(117.6967193, 0, 0);
 }

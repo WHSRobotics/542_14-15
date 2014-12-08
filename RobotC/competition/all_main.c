@@ -31,16 +31,6 @@
 
 void initializeRobot() //default servo positions were found experimentally
 {
-	servo[liftR] = 255;
-	servo[liftL] = 5;
-	servo[clampL] = 0;
-	servo[clampR] = 255;
-	servo[pushR] = 130;
-	servo[pushL] = 75;
-	servo[beltGuard] = 255;
-	servo[intake] = 0;
-	servo[headL] = 150;
-	servo[headR] = 90;
 	return;
 }
 
