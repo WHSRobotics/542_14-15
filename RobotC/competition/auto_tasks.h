@@ -34,7 +34,7 @@ void stopDrive()
 
 void raiseTubes()
 {
-	while(abs(nMotorEncoder(tubeLift)) < tubeLiftRot * 1120)
+	while(abs(nMotorEncoder[tubeLift]) < TUBE_LIFT_ROT * 1120)
 	{
 		motor[tubeLift] = 75;
 	}
@@ -57,17 +57,22 @@ void setMotors(int left, int right)
 void encoderReset()
 {
 	nMotorEncoder[driveL] = 0;
-	nMotorEncoder[driveR] = 0;  
+	nMotorEncoder[runBelt] = 0;
 }
 
 int encDist(int driveL, int driveR)
 {
-	return encoderConv * (abs(driveL) + abs(driveR))/2;
+	return ENCODER_CONV * abs(driveR + driveL)/2.0;
 }
 
-float valInRange(float val, float threshold = 1.0)
+float valInRange(float val, float threshold)
 {
-	return (abs(val) <= threshold) ? 0 : val;
+	return (abs(val) < threshold) ? 0.0 : val;
+}
+
+float valInRangeMirror(float val, float upLim, float downLim)
+{
+	return (abs(val) > downLim && abs(val) < upLim) ? val : 0.0;
 }
 
 bool isInRange(float heading, float targetHeading, float threshold = 1.0)
@@ -99,10 +104,10 @@ void moveStraight(int power, int distCm, int turnParam)
 	heading = 0.0;
 	encoderReset();
 	wait10Msec(25);
-	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[driveR]) < distCm) )
+	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]) < distCm) )
 	{
-		heading += valInRange(HTGYROreadRot(SENSOR_GYRO), 1.0) * dT; //edit for val in range?
-		if(inInRange(heading, 0, 1.0))
+		heading += (valInRange(HTGYROreadRot(HTGYRO), 1.0) * dT); //edit for val in range?
+		if(isInRange(heading, 0, 1.0))
 		{
 			setMotors(power, power);
 		}
@@ -121,7 +126,7 @@ void moveStraight(int power, int distCm, int turnParam)
 			wait10Msec(2);
 		}
 	}
-	stopMotors();
+	stopDrive();
 }
 
 void moveStraightP(int power, int distCm, int turnParam)
@@ -129,28 +134,26 @@ void moveStraightP(int power, int distCm, int turnParam)
 	heading = 0.0;
 	encoderReset();
 	wait10Msec(25);
-	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[driveR]) < distCm) )
+	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]) < distCm) )
 	{
-		heading += valInRange(HTGYROreadRot(SENSOR_GYRO), 1.0) * dT; //edit for val in range?
+		writeDebugStreamLine("%f", encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]));
+		heading += valInRange(HTGYROreadRot(HTGYRO), 1.0) * dT; //edit for val in range?
 		setMotors(power - (heading * turnParam), power + (heading * turnParam));
 		wait10Msec(2);
 	}
-	stopMotors();
+	stopDrive();
 }
 
 //spin
-void moveSpin(int power, int angRad)
+void moveSpin(int power, float angRad)
 {
-	heading = 0.0;
-	encoderReset();
-	wait10Msec(25);
-	while( abs(heading) < abs(angRad))
+	HTANGresetAccumulatedAngle(HTANG);
+	while( abs(HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD) < angRad )
 	{
-		heading += valInRange(HTGYROreadRot(SENSOR_GYRO), 1.0) * dT; //edit for val in range?
-		setMotors(sgn(angRad) * power, -sgn(angRad) * power);
-		wait10Msec(2);
+		setMotors(-power, power);
+		writeDebugStreamLine("%f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD);
 	}
-	stopMotors();
+	stopDrive();
 }
 
 //turn
