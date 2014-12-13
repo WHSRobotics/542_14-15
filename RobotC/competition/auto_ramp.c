@@ -1,12 +1,13 @@
 #pragma config(Hubs,  S1, HTServo,  HTServo,  HTServo,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
-#pragma config(Sensor, S4,     HTANG,          sensorNone)
-#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed)
+#pragma config(Sensor, S3,     HTANG,          sensorI2CCustom)
+#pragma config(Sensor, S4,     HTGYRO,         sensorI2CHiTechnicGyro)
+#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S2_C1_2,     motorG,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, driveRight)
-#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, driveLeft)
+#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, driveRight)
+#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, reversed, driveLeft, encoder)
 #pragma config(Servo,  srvo_S1_C1_1,    clampL,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    pushL,                tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_3,    liftL,                tServoStandard)
@@ -36,16 +37,18 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-	moveStraight(175.6, 20, 30);
-	moveSpin(-PI/2, 30);
-	moveStraight(20, 20, 30);
-	moveSpin(PI/2, 30);
-	moveStraight(84, 20, 30);
-	moveSpin(PI/3, 30);
-	moveStraight(56, 20, 30);
+	HTGYROstartCal(HTGYRO);
+	wait10Msec(50);
+	moveStraight(-20, 155.6, 1.6); //good
+	moveSpin(-30, PI/2);
+	moveStraight(-30, 40, 1.6);
+	/*moveSpin(-30, PI/2);
+	moveStraight(-30, 84, 1.6);
+	moveSpin(-30, PI/3);
+	moveStraight(-30, 56, 1.6);
 	//clamps here
-	moveSpin(7/4*PI, 30);
-	moveStraight(266.7, 20, 30);
+	moveSpin(-30, 7/4*PI);
+	moveStraight(-30, 266.7, 1.6);
 	motor[runBelt] = 100;
-	wait10Msec(150);
+	wait10Msec(150);*/
 }
