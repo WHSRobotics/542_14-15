@@ -45,7 +45,7 @@ task main()
 	moveStraight(56, 20, 30);
 	//clamps here
 	moveSpin(7/4*PI, 30);
-	moveStraight(294, 20, 30);
+	moveStraight(266.7, 20, 30);
 	motor[runBelt] = 100;
 	wait10Msec(150);
 }
