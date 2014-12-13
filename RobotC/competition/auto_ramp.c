@@ -37,12 +37,12 @@ task main()
 	initializeRobot();
 	waitForStart();
 	moveStraight(175.6, 20, 30);
-	moveSpin(PI/2, 30);
+	moveSpin(-PI/2, 30);
 	moveStraight(20, 20, 30);
 	moveSpin(PI/2, 30);
-	moveStraight(188, 20, 30);
+	moveStraight(84, 20, 30);
 	moveSpin(PI/3, 30);
-	moveStraight(117, 20, 30);
+	moveStraight(56, 20, 30);
 	//clamps here
 	moveSpin(7/4*PI, 30);
 	moveStraight(294, 20, 30);
