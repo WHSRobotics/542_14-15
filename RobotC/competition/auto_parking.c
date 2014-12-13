@@ -48,13 +48,13 @@ task main()
 	moveStraight(40, 50, 70);
 	moveSpin(-PI/2,20);
 
-	moveStraight(130, 30, 40);
+	moveStraight(188, 30, 40);
 	moveSpin(PI/4, 20);
 
-	moveStraight(30, 30, 40);
+	moveStraight(76, 30, 40);
 	//move forward, grab goal, clamp and adjust
 	moveSpin(11.0/12.0*PI, 50);
 
 	//back to goal
-	moveStraight(117.6967193, 0, 0);
+	moveStraight(182.88, 0, 0);
 }
