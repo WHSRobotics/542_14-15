@@ -32,15 +32,6 @@ void stopDrive()
 	motor[driveR] = 0;//driveR motor is at 0 power
 }
 
-void raiseTubes()
-{
-	while(abs(nMotorEncoder[tubeLift]) < TUBE_LIFT_ROT * 1120)
-	{
-		motor[tubeLift] = 75;
-	}
-	motor[tubeLift] = 0;
-}
-
 void scoreBall()
 {
 	motor[runBelt] = 100;

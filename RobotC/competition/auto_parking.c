@@ -38,24 +38,35 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	/*startTask(DCControl);
+	//Gyro Calibration
+	HTGYROstartCal(HTGYRO);
+	wait10Msec(50);
+
+	//StartTasks
+	startTask(DCControl);
 	startTask(servoPlate);
 
-	while(!joy2Btn(03)){}
-	wait10Msec(120);
-	startTask(servoPush);*/
+	moveStraight(-50, 30, 2.0);
+	moveSpin(-50, 1.5);
 
-	raiseTubes();
-	moveStraight(40, 50, 70);
-	moveSpin(-PI/2,20);
 
-	moveStraight(188, 30, 40);
-	moveSpin(PI/4, 20);
+	moveStraight(-50, 220, 2.0);
+	plateOpen = true;
+	headUp = true;
+	tubesUp = true;
+	moveSpin(50, 3.5);
+	StartTask(servoPush);
 
-	moveStraight(76, 30, 40);
-	//move forward, grab goal, clamp and adjust
-	moveSpin(11.0/12.0*PI, 50);
-
-	//back to goal
-	moveStraight(182.88, 0, 0);
+	moveStraight(50, 30, 2.0);
+	clampDown = true;
+	moveSpin(-50, 1.0);
+	clampDown = false;
+	moveStraight(50, 20, 2.0);
+	clampDown = true;
+	moveStraight(-50, 10, 2.0);
+	moveSpin(50, 1.9);
+	moveStraight(-50, 120, 2.0);
+	plateAngleState = 4;
+	intakeIn = true;
+	intakeIn = false;
 }

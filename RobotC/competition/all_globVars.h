@@ -15,8 +15,16 @@ bool headUp = false;
 int plateAngleState = 0;
 int angleGain = 10;
 int tiltState = 0;
-int tiltGain = 14;
+int tiltGain = 5;
 
+bool goalUp = false;
+bool goalDown = false;
+
+bool intakeIn = false;
+bool intakeOut = false;
+
+bool pushOut = false;
+bool tubesUp = false;
 
 const int JOY_THRESH = 16;
 
@@ -30,7 +38,7 @@ const float ENCODER_CONV = PI * 10.16/1120.0;
 const float dT = 0.02;
 const float ANG_CONV = 7.62 * PI/600.0;
 const float ENC_RAD = 11.5;
-const float TUBE_LIFT_ROT = 4.9 * 1120.0;
+const float TUBE_LIFT_ROT = 5400; //4.9
 float heading = 0.0;
 
 #endif;

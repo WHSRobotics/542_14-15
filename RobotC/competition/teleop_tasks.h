@@ -68,9 +68,7 @@ task servoPlate()
 		{
 			if(!toggleTilt)
 			{
-				tiltState = (sgn(tiltState) != sgn(4-joystick.joy2_TopHat))	//If the toggleAngle value is false, then commit the following command
-				?tiltState + sgn(4 - joystick.joy2_TopHat)
-				:tiltState;
+				tiltState += sgn(4 - joystick.joy2_TopHat);
 			}
 			toggleTilt = true;
 		}
@@ -131,7 +129,7 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy2Btn(05))
+			if (joy2Btn(05) || pushOut)
 			{
 				clampDown = !clampDown
 				?true
@@ -157,14 +155,14 @@ task DCControl()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[goalLift] = joy2Btn(06)	//If the 2nd joystick button 6 is pressed commit following command
+		motor[goalLift] = (joy2Btn(06) || goalUp)	//If the 2nd joystick button 6 is pressed commit following command
 		? 100	//Motor[goalLift] power will be set to 100
-		: joy2Btn(08)	//Else if the 2nd joystick button 8 is pressed commit following command
+		: (joy2Btn(08) || goalDown)	//Else if the 2nd joystick button 8 is pressed commit following command
 		? -75	//motor[goalLift] power will be set to -75
 		: 0;	//Else the motor[goalLift] power will be set to 0
-		motor[runBelt] = (joy1Btn(06))	//If the 1st joystick button 6 is pressed commit following command
+		motor[runBelt] = (joy1Btn(06) || intakeIn)	//If the 1st joystick button 6 is pressed commit following command
 		? 100	//Motor[runBelt] power will be set to 100
-		: (joy1Btn(08))	//Else if the 1st joystick button 8 is pressed commit following command
+		: (joy1Btn(08) || intakeOut)	//Else if the 1st joystick button 8 is pressed commit following command
 		? -100	//motor[goalLift] power will be set to -100
 		: 0;	//Else the motor[goalLift] power will be set to 0
 		if(headUp)	//If headUp is true then commit following command
@@ -172,9 +170,19 @@ task DCControl()
 			servo[headL] = 20;
 			servo[headR] = 230;
 		}
+		if(tubesUp)
+		{
+			nMotorEncoder[tubeLift] = 0;
+			while(nMotorEncoder[tubeLift] < TUBE_LIFT_ROT)
+			{
+				motor[tubeLift] = 100;
+			}
+			motor[tubeLift] = 0;
+			tubesUp = false;
+		}
 		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
 		{
-			motor[tubeLift] = 75;
+			motor[tubeLift] = 100;
 		}
 		else
 		{
