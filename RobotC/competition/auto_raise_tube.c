@@ -36,7 +36,7 @@ task main()
 	initializeRobot();
 	waitForStart();
 	HTGYROstartCal(HTGYRO);
-	wait10Msec(100);
+	wait10Msec(50);
 	//raiseTubes();
 	//moveStraight(-30, 15, 1.6);
 	//moveStraightP(-30, 30, 1);
