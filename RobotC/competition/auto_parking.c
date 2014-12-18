@@ -47,17 +47,19 @@ task main()
 	startTask(servoPlate);
 
 	moveStraight(-50, 30, 2.0);
-	moveSpin(-50, 1.5);
+	//moveSpin(-50, 1.5);
 
 
-	moveStraight(-50, 220, 2.0);
+	//moveStraight(-50, 220, 2.0);
 	plateOpen = true;
 	headUp = true;
 	tubesUp = true;
-	moveSpin(50, 3.5);
+	//moveSpin(50, 3.5);
+	wait10Msec(200);
 	StartTask(servoPush);
+	while(true){};
 
-	moveStraight(50, 30, 2.0);
+	/*moveStraight(50, 30, 2.0);
 	clampDown = true;
 	moveSpin(-50, 1.0);
 	clampDown = false;
@@ -68,5 +70,5 @@ task main()
 	moveStraight(-50, 120, 2.0);
 	plateAngleState = 4;
 	intakeIn = true;
-	intakeIn = false;
+	intakeIn = false;*/
 }

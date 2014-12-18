@@ -1,13 +1,15 @@
 #pragma config(Hubs,  S1, HTServo,  HTServo,  HTServo,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     HTANG,          sensorI2CCustom)
 #pragma config(Sensor, S4,     HTGYRO,         sensorI2CHiTechnicGyro)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S2_C1_2,     motorG,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, driveRight)
-#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, reversed, driveLeft, encoder)
+#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, driveRight)
+#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, driveLeft, encoder)
 #pragma config(Servo,  srvo_S1_C1_1,    clampL,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    pushL,                tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_3,    liftL,                tServoStandard)
@@ -32,6 +34,8 @@
 
 void initializeRobot() //default servo positions were found experimentally
 {
+	servo[pushR] = 130;
+	servo[pushL] = 75;
 	return;
 }
 
