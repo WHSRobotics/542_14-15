@@ -2,14 +2,12 @@
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S3,     HTANG,          sensorI2CCustom)
-#pragma config(Sensor, S4,     HTGYRO,         sensorI2CHiTechnicGyro)
-#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_2,     motorG,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, driveRight)
-#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, driveLeft, encoder)
+#pragma config(Motor,  mtr_S2_C2_2,     driveL,        tmotorTetrix, openLoop, driveLeft)
 #pragma config(Servo,  srvo_S1_C1_1,    clampL,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    pushL,                tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_3,    liftL,                tServoStandard)
@@ -32,32 +30,37 @@
 
 #include "teleop_tasks.h"
 
-void initializeRobot() //default servo positions were found experimentally
+void initializeRobot() //default values of the the servos
 {
+	servo[liftR] = 255;
+	servo[liftL] = 5;
+	servo[clampL] = 0;
+	servo[clampR] = 255;
 	servo[pushR] = 130;
 	servo[pushL] = 75;
+	servo[beltGuard] = 255;
+	servo[intake] = 0;
+	servo[headL] = 150;
+	servo[headR] = 90;
 	return;
 }
 
-//expand order
-//head lift and tube lift simultaneously
-//raise goal lift a bit
-//open plate
-//auto
-//nMotorEncoder[tubeLift] = 0;
-
 task main()
 {
-	initializeRobot();
-	waitForStart();
+	initializeRobot(); //puts the servos in their default positions
+	waitForStart(); //waits for start
 
-	startTask(DCControl);
-	startTask(drive);
-	startTask(servoPlate);
+	nMotorEncoder[tubeLift] = 0; // the encoder for tubeLift dosn't move
+	startTask(DCControl);//starts DCControl task
+	startTask(drive); //starts drive task
+	startTask(servoPlate); //starts servoPlate task
 
-	while(!joy2Btn(03)){}
-	wait10Msec(200); //Allows ample time for initialization before setting idle push servo position
-	startTask(servoPush);
+	while(!joy1Btn(03)){}//when button 3 is pressed on the first joystick,
+	wait10Msec(200);//robot waits 20 seconds
+	startTask(servoPush);//starts servoPush task
 
-	while(true){}
+	while(true)//infinate loop
+	{
+		//writeDebugStreamLine("%d", nMotorEncoder[tubeLift]);
+	}
 }
