@@ -129,20 +129,27 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy2Btn(05) || pushOut)
+			switch(pushOut)
 			{
-				clampDown = !clampDown
-				?true
-				:clampDown;
-				servo[pushL] = 75;
-				wait10Msec(10);
-				servo[pushR] = 175;
-			}
-			else
-			{
-				servo[pushR] = 5;
-				wait10Msec(10);
-				servo[pushL] = 235;
+				case false:
+					servo[pushR] = 5;
+					wait10msec(10);
+					servo[pushL] = 235;
+					if(joy2Btn(05))
+					{
+						pushOut = true;
+					}
+				break;
+				
+				case true:
+					servo[pushL] = 75;
+					wait10msec(10);
+					servo[pushR] = 175;
+					if(servoVal[pushR]== 175 || joy2Btn(05))
+					{
+						pushOut=false;
+					}
+				break;
 			}
 		}
 	}
