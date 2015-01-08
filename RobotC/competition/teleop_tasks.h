@@ -26,8 +26,7 @@ int joyMapCurve(int joyIn, int THRESH)
 }
 
 //TASKS
-//////Servo Plate Task///////
-task servoPlate()
+task servoControl()
 {
 	while(true)
 	{
@@ -75,6 +74,65 @@ task servoPlate()
 		else
 		{
 			toggleTilt = false;
+		}
+
+		if(abs(2-joystick.joy1_TopHat) == 2)
+		{
+			if(!toggleHead)
+			{
+				headState = ((headState - sgn(2-joystick.joy1_TopHat)) < 0)
+				?headState
+				:headState - sgn(2-joystick.joy1_TopHat);
+			}
+			toggleHead = true;
+		}
+		else
+		{
+			toggleHead = false;
+		}
+
+		if(joy1Btn(03))
+		{
+			if(!toggleMouth)
+			{
+				mouthState = (mouthState+1)%4;
+				mouthRun = true;
+			}
+			toggleMouth = true;
+		}
+		else
+		{
+			toggleMouth = false;
+		}
+		if(mouthRun)
+		{
+			switch(mouthState)
+			{
+				case 0:
+					servo[mouth] = 255;
+					wait10Msec(90);
+					servo[mouth] = 127;
+				break;
+
+				case 1:
+					servo[mouth] = 0;
+					wait10Msec(45);
+					servo[mouth] = 127;
+				break;
+
+				case 2:
+					servo[mouth] = 0;
+					wait10Msec(30);
+					servo[mouth] = 127;
+				break;
+
+				case 3:
+					servo[mouth] = 255;
+					wait10Msec(7);
+					servo[mouth] = 127;
+				break;
+			}
+			mouthRun = false;
 		}
 
 		switch(plateOpen)
@@ -140,12 +198,15 @@ task servoPush()
 						pushOut = true;
 					}
 				break;
-				
+
 				case true:
+					clampDown = (!clampDown)
+					? true
+					: clampDown;
 					servo[pushL] = 75;
-					wait10msec(10);
+					wait10Msec(10);
 					servo[pushR] = 175;
-					if(servoVal[pushR]== 175 || joy2Btn(05))
+					if(ServoValue[pushR] == 175)
 					{
 						pushOut=false;
 					}
@@ -172,10 +233,15 @@ task DCControl()
 		: (joy1Btn(08) || intakeOut)	//Else if the 1st joystick button 8 is pressed commit following command
 		? -100	//motor[goalLift] power will be set to -100
 		: 0;	//Else the motor[goalLift] power will be set to 0
+		motor[dowelLift]  = (joy1Btn(05) ||dowelUp)
+		? 100
+		: (joy1Btn(07) || dowelDown)
+		? -100
+		: 0;
 		if(headUp)	//If headUp is true then commit following command
 		{
-			servo[headL] = 20;
-			servo[headR] = 230;
+			servo[headL] = 20 + headState * headGain;
+			servo[headR] = 230 - headState * headGain;
 		}
 		if(tubesUp)
 		{
@@ -227,7 +293,7 @@ task drive()
 {
 	while(true)
 	{
-		if(joy1Btn(05))	//If the 1st joystick button 5 is pressed, commit the following command
+		if(joy1Btn(04))	//If the 1st joystick button 5 is pressed, commit the following command
 		{
 			if(!toggleSlo)	//If the toggleSlo is false, then commit the following command
 			{
