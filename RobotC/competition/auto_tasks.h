@@ -4,7 +4,7 @@
 #include "all_globVars.h"
 #include "JoystickDriver.c"
 #include "hitechnic-angle.h"
-#include "hitechnic-gyro.h"
+#include "hitechnic-compass.h"
 
 //odometry based control - position changes - velocity changes
 //gyro based control - angular velocity
@@ -39,7 +39,7 @@ void scoreBall()
 	motor[runBelt] = 0;
 }
 
-void setMotors(int left, int right)
+void setMotors(int left, int right = left)
 {
 	motor[driveL] = left;
 	motor[driveR] = right;
@@ -51,46 +51,51 @@ void encoderReset()
 	nMotorEncoder[runBelt] = 0;
 }
 
-int encDist(int driveL, int driveR)
+bool isInRange(float reference, float compared , float threshold)
 {
-	return ENCODER_CONV * abs(driveR + driveL)/2.0;
+	return abs(reference - compared) < threshold;
 }
 
-float valInRange(float val, float threshold)
+void moveStraight(float distCm, int power, float gain)
 {
-	return (abs(val) < threshold) ? 0.0 : val;
-}
-
-float valInRangeMirror(float val, float upLim, float downLim)
-{
-	return (abs(val) > downLim && abs(val) < upLim) ? val : 0.0;
-}
-
-bool isInRange(float heading, float targetHeading, float threshold = 1.0)
-{
-	return abs(heading - targetHeading) <= threshold;
-}
-
-/*void moveStraightDistance(float distCm, int speedL, int speedR)
-{
-	HTANGresetAccumulatedAngle(HTANG);
+	encoderReset();
 	while(true)
 	{
-		writeDebugStreamLine("dist: %f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV);
-		if(distCm > abs((HTANGreadAccumulatedAngle(HTANG) * ANG_CONV)))
+		//opposite sign encoders
+		float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] - nMotorEncoder[runBelt])/2.0;
+		if(!isInRange(distCm, encDist, 1))
 		{
-			motor[driveR] = speedR;
-			motor[driveL] = speedL;
+				setMotors(power * gain*(distCm - encDist), power * gain*(distCm - encDist));
 		}
 		else
 		{
 			stopDrive();
+			break;
 		}
 	}
-}*/
+}
+
+void moveSpin(float angRad, float power)
+{
+	encoderReset();
+	while(true)
+	{
+		//opposite side encoders
+		float encAng = ENCODER_CONV*abs(nMotorEncoder[runBelt] + nMotorEncoder[driveL])/ROBOT_WID;
+		if(!isInRange(angRad, encAng, 0.036))
+		{
+			setMotors(power * pow(angRad - encAng, 0.33)/angRad, -power * pow(angRad - encAng, 0.33)/angRad;
+		}
+		else
+		{
+			stopDrive();
+			break;
+		}
+	}
+}
 
 //straight
-void moveStraight(int power, int distCm, int turnParam)
+/*void moveStraight(int power, int distCm, int turnParam)
 {
 	heading = 0.0;
 	encoderReset();
@@ -135,17 +140,7 @@ void moveStraightP(int power, int distCm, int turnParam)
 	stopDrive();
 }
 
-//spin
-void moveSpin(int power, float angRad)
-{
-	HTANGresetAccumulatedAngle(HTANG);
-	while( abs(HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD) < angRad )
-	{
-		setMotors(-power, power);
-		writeDebugStreamLine("%f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD);
-	}
-	stopDrive();
-}
+//spin*/
 
 //turn
 //pivot
