@@ -40,24 +40,20 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	//Gyro Calibration
-	HTGYROstartCal(HTGYRO);
-	wait10Msec(50);
-
 	//StartTasks
 	startTask(DCControl);
-	startTask(servoPlate);
+	startTask(servoControl);
 
-	moveStraight(-50, 30, 2.0);
+	moveStraight(30, -100);
+
 	//moveSpin(-50, 1.5);
 
 
 	//moveStraight(-50, 220, 2.0);
-	plateOpen = true;
 	headUp = true;
 	tubesUp = true;
-	//moveSpin(50, 3.5);
-	wait10Msec(200);
+	plateOpen = true;
+	wait10Msec(400);
 	StartTask(servoPush);
 	while(true){};
 

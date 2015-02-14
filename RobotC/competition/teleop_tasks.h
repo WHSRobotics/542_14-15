@@ -190,13 +190,18 @@ task DCControl()
 		}
 		if(tubesUp)
 		{
+			/*
 			nMotorEncoder[tubeLift] = 0;
 			while(nMotorEncoder[tubeLift] < TUBE_LIFT_ROT)
-			{
+			{*/
 				motor[tubeLift] = 100;
-			}
+				wait10Msec(490);
+				motor[tubeLift] = 0;
+				writeDebugStreamLine("encoder %d", nMotorEncoder[tubeLift]);
+				tubesUp = false;
+			/*}
 			motor[tubeLift] = 0;
-			tubesUp = false;
+			tubesUp = false;*/
 		}
 		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
 		{

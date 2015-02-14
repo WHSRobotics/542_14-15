@@ -41,17 +41,12 @@ const float dT = 0.02;
 const float ANG_CONV = 7.62 * PI/600.0;
 const float ENC_RAD_R = 11.5;
 const float ENC_RAD_L = 7.2;
-const float TUBE_LIFT_ROT = 5400; //4.9 rots
+const float TUBE_LIFT_ROT = 5125; //4.9 rots
 const float ROBOT_WID = 36.195;
 
-float x = 0.0;
-float y = 0.0;
-float w = 0.0;
-
-float delta_w = ENCODER_CONV * (nMotorEncoder[runBelt] - nMotorEncoder[driveL])/36.195;
 float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] + nMotorEncoder[runBelt])/2.0;
-float delta_x = encDist*cos(w);
-float delta_y = encDist*sin(w);
+
+int IR_A, IR_B, IR_C, IR_D, IR_E;
 
 
 #endif;
