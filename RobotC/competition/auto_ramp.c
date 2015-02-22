@@ -37,23 +37,15 @@
 
 task main()
 {
-	//raise tubes as moving to the goal area
-	//ram into goal, clamp, tilt
-	//return to parking base, score
 	initializeRobot();
 	waitForStart();
 
-	//Task Starts
 	startTask(DCControl);
 	startTask(servoControl);
 
-	//moveStraight(50, 70); //good
 	setMotors(70, 70);
 	wait10Msec(300);
 	stopDrive();
-	//moveSpin(-50, 1.4);
-	//moveStraight(-50, 40, 2.0); //good
-	//moveSpin(50, 1.7);
 
 	plateOpen = true;
 	headUp = true;
@@ -62,20 +54,4 @@ task main()
 	StartTask(servoPush);
 
 	while(true){};
-
-	//moveStraight(-50, 80, 1.6);
-	//moveSpin(-50, 3.3);
-	//moveStraight(50, 34, 1.6);
-	//clampDown = true;
-	//moveSpin(50, 1.2);
-	//clampDown = false;
-	//moveStraight(50, 15, 1.6);
-	//clampDown = true;
-
-	/*moveSpin(-30, 7/4*PI);
-	moveStraight(-30, 266.7, 1.6);
-	*/
-	//plateAngleState = 4;
-	//intakeIn = true;
-	//intakeIn = false;
 }

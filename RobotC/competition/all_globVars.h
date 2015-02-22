@@ -14,11 +14,11 @@ bool sloMo = false;
 bool headUp = false;
 
 int plateAngleState = 0;
-int angleGain = 5;
+int ANGLE_GAIN = 5;
 int tiltState = 0;
-int tiltGain = 5;
+int TILT_GAIN = 5;
 int headState = 0;
-int headGain = 10;
+int HEAD_GAIN = 10;
 
 bool goalUp = false;
 bool goalDown = false;

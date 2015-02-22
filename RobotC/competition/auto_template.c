@@ -31,118 +31,11 @@
 #include "teleop_tasks.h"
 #include "auto_tasks.h"
 
-bool goal = false;
-bool ramp = false;
-
 task main()
 {
 	initializeRobot();
 	waitForStart();
 
-	HTIRS2setDSPMode(HTIR, DSP_1200);
-	//AUTO CODE START//
-	//ramp length 58 in. - 147.32//
-	//ramp space taken up 56.77 in. - 144.20//
-	//extra 15.22 in. - 38.68//
-
-if(goal)
-{
-	//To goal intermediate from ramp//
-	if(ramp)
-	{
-		moveStraight(163.78, -50);
-		moveSpin(PI/2.0, -100);
-		moveStraight(76.2, -100);
-		moveSpin(PI/2.0, 100);
-		moveSpin(0.4636, 100);
-	}
-	//to goal intermediate from parking//
-	else
-	{
-		moveStraight(65.22, -100);
-		moveSpin(0.4636, 100);
-		moveStraight(102.23, -100);
-	}
-		startTask(DCControl);
-		startTask(servoControl);
-		plateOpen = true;
-		headUp = true;
-		tubesUp = true;
-		wait10Msec(200);
-		startTask(servoPush);
-		moveStraight(140.55, 100);
-		clampDown = true;
-}
-else
-{
-	if(ramp)
-	{
-		//Ramp to kickstand
-		moveStraight(164, 50);
-		moveSpin(PI/2.0, -100);
-		//position 1 C > 15
-		HTIRS2readAllACStrength(HTIR, IR_A,IR_B,IR_C,IR_D,IR_E);
-		if(IR_C > 15)
-		{
-		moveStraight(122, 100);
-		moveSpin(PI/2.0, -100);
-		moveStraight(61, 100);
-		moveSpin(PI/2.0, 100);
-		moveStraight(61, 100);
-		}
-
-		//position 2  15 < C
-		else if(IR_C < 15)
-		{
-		moveStraight(100, 100);
-		moveSpin(PI/4.0, -100);
-		moveStraight(61, 100);
-		}
-
-		//position 3 default
-		else
-		{
-		moveStraight(122, 100);
-		moveSpin(PI/2.0, -100);
-		moveStraight(61, 100);
-		}
-	}
-	else
-	{
-		//Parking Zone to kickstand
-
-		//Position 2 B > 5
-		HTIRS2readAllACStrength(HTIR, IR_A,IR_B,IR_C,IR_D,IR_E);
-		if(IR_B > 5)
-		{
-		moveStraight(122, 100);
-		moveSpin(1.5*PI, -100);
-		}
-
-		//Position 3 C > 15
-		else if(IR_C > 15)
-		{
-		moveStraight(183, 100);
-		}
-
-		//Position 1 default
-		else
-		{
-		moveStraight(122, 100);
-		moveSpin(PI/2.0, -100);
-		moveStraight(122, 100);
-		}
-	}
-	startTask(DCControl);
-	startTask(servoControl);
-	plateOpen = true;
-	headUp = true;
-	tubesUp = true;
-	wait10Msec(200);
-	startTask(servoPush);
-}
-
-//move spin doesn't work quite well with angles over PI/2
 	while(true)
 	{
 	}

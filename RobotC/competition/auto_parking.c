@@ -40,33 +40,16 @@ task main()
 	initializeRobot();
 	waitForStart();
 
-	//StartTasks
 	startTask(DCControl);
 	startTask(servoControl);
 
 	moveStraight(30, -100);
 
-	//moveSpin(-50, 1.5);
-
-
-	//moveStraight(-50, 220, 2.0);
 	headUp = true;
 	tubesUp = true;
 	plateOpen = true;
 	wait10Msec(400);
 	StartTask(servoPush);
-	while(true){};
 
-	/*moveStraight(50, 30, 2.0);
-	clampDown = true;
-	moveSpin(-50, 1.0);
-	clampDown = false;
-	moveStraight(50, 20, 2.0);
-	clampDown = true;
-	moveStraight(-50, 10, 2.0);
-	moveSpin(50, 1.9);
-	moveStraight(-50, 120, 2.0);
-	plateAngleState = 4;
-	intakeIn = true;
-	intakeIn = false;*/
+	while(true){};
 }
