@@ -6,11 +6,14 @@
 #include "JoystickDriver.c"
 
 //FUNCTIONS
+//A Value on a defined domain is mapped to a defined range//
+//Example usage: Joystick Value to Servo Position//
 float linMap(float rLower, float rUpper, float dLower, float dUpper, float dVal)
 {
 	return (dVal - dLower) * (rUpper - rLower) / (dUpper - dLower)+rLower;
 }
 
+//Special Linear Map for Joysticks to drive motors//
 int joyMapLin(int joyIn, int THRESH)
 {
 	return (abs(joyIn) > THRESH)
@@ -18,29 +21,21 @@ int joyMapLin(int joyIn, int THRESH)
 	: 0;
 }
 
-int joyMapCurve(int joyIn, int THRESH)
-{
-	return (abs(joyIn) > THRESH)
-	? (int)(100.0/16384.0 * sgn(joyIn) * pow(joyIn,2))
-	: 0;
-}
-
 //TASKS
-//////Servo Plate Task///////
-task servoPlate()
+task servoControl()
 {
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		if(joy2Btn(03))	//If button 3 is pressed follow through with the following command
+		//Commands are executed when Button 3 is pressed//
+		if(joy2Btn(03))
 		{
-			if(!togglePlate)	//If the boolean togglePlate is false then commit the following command
+			//Boolean Conditional here with value setting insures flipflop behavior of plate opening and closing//
+			if(!togglePlate)
 			{
-				plateOpen = !plateOpen;	//plateOpen boolean is set to true
-				headUp = true;	//headUp boolean is set to true
-				clampDown = plateOpen	//clampDown boolean value is determined by plateOpen boolean value
-				?true	//If plateOpen is true, then clampDown is set to true
-				:false;	//Else, clampDown is set to false
+				plateOpen = !plateOpen;
+				headUp = true;
+				clampDown = plateOpen;
 			}
 			togglePlate = true;
 		}
@@ -49,8 +44,11 @@ task servoPlate()
 			togglePlate = false;
 		}
 
+		//Commands are executed when the joystick 2 d-pad is at values of 0 or 4 (up and down)//
 		if(abs(2-joystick.joy2_TopHat) == 2)
 		{
+			//Angle of Plate can be changed incrementally by pressing up or down//
+			//A specific limit is set so that the angle of the plate cannot decrease past 0//
 			if(!toggleAngle)
 			{
 				plateAngleState = ((plateAngleState + sgn(2-joystick.joy2_TopHat)) < 0)
@@ -64,8 +62,11 @@ task servoPlate()
 			toggleAngle = false;
 		}
 
-		if(abs(4-joystick.joy2_TopHat) == 2)	//If the joystick d-pad is at the 2 or 6 value then commit the following command
+		//Commands are executed when the joystick 2 d-pad is at values of 2 or 6 (left and right)//
+		if(abs(4-joystick.joy2_TopHat) == 2)
 		{
+			//Tilt of Plate can be adjusted incrementally by pressing left or right//
+			//No limit set here, drivers moderate visually//
 			if(!toggleTilt)
 			{
 				tiltState += sgn(4 - joystick.joy2_TopHat);
@@ -77,11 +78,32 @@ task servoPlate()
 			toggleTilt = false;
 		}
 
+		//Commands are executed when the joystick 1 d-pad is at values of 0 or 4 (up and down)//
+		if(abs(2-joystick.joy1_TopHat) == 2)
+		{
+			//Tilt of Redirector (head) can be adjusted incrementally by pressing up and down//
+			//A specific limit is set so that it does not go past the full up position// 
+			if(!toggleHead)
+			{
+				headState = ((headState - sgn(2-joystick.joy1_TopHat)) < 0)
+				?headState
+				:headState - sgn(2-joystick.joy1_TopHat);
+			}
+			toggleHead = true;
+		}
+		else
+		{
+			toggleHead = false;
+		}
+
+		//A switch was used as a simple 2 state automata controlling the plate//
+		//A switch was also used to keep states mutually exclusive in the while loop//
+		//Conditionals instead of switches would have had subsequent execution as soon as the condition was violated//
 		switch(plateOpen)
 		{
 			case true:
-				servo[liftR] = 50 + (plateAngleState * angleGain) + (tiltState * tiltGain);
-				servo[liftL] = 220 - (plateAngleState * angleGain) + (tiltState * tiltGain);
+				servo[liftR] = 50 + (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
+				servo[liftL] = 220 - (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
 				servo[beltGuard] = 0;
 				servo[intake] = 200;
 			break;
@@ -94,10 +116,12 @@ task servoPlate()
 			break;
 		}
 
+		//Command is executed when both the plate is open and Button 1 is pressed//
 		if(joy2Btn(01)&&plateOpen)
 		{
 			if(!toggleClamp)
 			{
+				//Clamp Down or Clamp off: a boolean acts as a flipflop switch with clear state change//
 				clampDown = !clampDown;
 			}
 			toggleClamp = true;
@@ -106,6 +130,8 @@ task servoPlate()
 		{
 			toggleClamp = false;
 		}
+
+		//A switch was used as a simple 2 state automata controlling the clamp//
 		switch(clampDown)
 		{
 			case true:
@@ -121,7 +147,6 @@ task servoPlate()
 	}
 }
 
-
 task servoPush()
 {
 	while(true)
@@ -129,56 +154,74 @@ task servoPush()
 		getJoystickSettings(joystick);
 		if(plateOpen)
 		{
-			if (joy2Btn(05) || pushOut)
+			//A switch was used as a simple 2 state automata controlling the push servos//
+			switch(pushOut)
 			{
-				clampDown = !clampDown
-				?true
-				:clampDown;
-				servo[pushL] = 75;
-				wait10Msec(10);
-				servo[pushR] = 175;
-			}
-			else
-			{
-				servo[pushR] = 5;
-				wait10Msec(10);
-				servo[pushL] = 235;
+				case false:
+					servo[pushR] = 5;
+					wait10msec(10);
+					servo[pushL] = 235;
+					if(joy2Btn(05))
+					{
+						pushOut = true;
+					}
+				break;
+
+				case true:
+					clampDown = (!clampDown)
+					? true
+					: clampDown;
+					servo[pushL] = 75;
+					wait10Msec(10);
+					servo[pushR] = 175;
+					if(ServoValue[pushR] == 175)
+					{
+						pushOut=false;
+					}
+				break;
 			}
 		}
 	}
 }
 
 //DC Stuff
-
 task DCControl()
 {
 	while(true)
 	{
 		getJoystickSettings(joystick);
-		motor[goalLift] = (joy2Btn(06) || goalUp)	//If the 2nd joystick button 6 is pressed commit following command
-		? 100	//Motor[goalLift] power will be set to 100
-		: (joy2Btn(08) || goalDown)	//Else if the 2nd joystick button 8 is pressed commit following command
-		? -75	//motor[goalLift] power will be set to -75
-		: 0;	//Else the motor[goalLift] power will be set to 0
-		motor[runBelt] = (joy1Btn(06) || intakeIn)	//If the 1st joystick button 6 is pressed commit following command
-		? 100	//Motor[runBelt] power will be set to 100
-		: (joy1Btn(08) || intakeOut)	//Else if the 1st joystick button 8 is pressed commit following command
-		? -100	//motor[goalLift] power will be set to -100
-		: 0;	//Else the motor[goalLift] power will be set to 0
-		if(headUp)	//If headUp is true then commit following command
+		//These ternary operators set motor power based on button presses or boolean values//
+		motor[goalLift] = (joy2Btn(06) || goalUp)
+		? 100
+		: (joy2Btn(08) || goalDown)
+		? -75
+		: 0;
+		motor[runBelt] = (joy1Btn(06) || intakeIn)
+		? 100
+		: (joy1Btn(08) || intakeOut)
+		? -100
+		: 0;
+		//Why is this here and not in servo control?//
+		if(headUp)
 		{
-			servo[headL] = 20;
-			servo[headR] = 230;
+			servo[headL] = 20 + headState * HEAD_GAIN;
+			servo[headR] = 230 - headState * HEAD_GAIN;
 		}
+		//Automatic Tube lifting (only used in autonomous)//
 		if(tubesUp)
 		{
+			/*
 			nMotorEncoder[tubeLift] = 0;
 			while(nMotorEncoder[tubeLift] < TUBE_LIFT_ROT)
-			{
+			{*/
 				motor[tubeLift] = 100;
-			}
+				wait10Msec(490);
+				motor[tubeLift] = 0;
+				writeDebugStreamLine("encoder %d", nMotorEncoder[tubeLift]);
+				tubesUp = false;
+			/*}
 			motor[tubeLift] = 0;
-			tubesUp = false;
+			tubesUp = false;*/
 		}
 		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
 		{
@@ -198,7 +241,8 @@ task DCControl()
 
 void checkActive(int THRESH)
 {
-	if((abs(joystick.joy1_y1) > THRESH) || (abs(joystick.joy1_y2) > THRESH))	//If the absolute value of the 1st joystick sticks go past a threshold, commit the following command
+	//If the absolute value of the 1st joystick sticks go past a threshold, show with a boolean that joystick 1 is active
+	if((abs(joystick.joy1_y1) > THRESH) || (abs(joystick.joy1_y2) > THRESH))
 	{
 		joy1Active = true;
 	}
@@ -206,7 +250,8 @@ void checkActive(int THRESH)
 	{
 		joy1Active = false;
 	}
-	if((abs(joystick.joy2_y1) > THRESH) || (abs(joystick.joy2_y2) > THRESH))	//If the absolute value of the 2nd joystick sticks go past a threshold, commit the following command
+	//If the absolute value of the 2nd joystick sticks go past a threshold, show with a boolean that joystick 2 is active
+	if((abs(joystick.joy2_y1) > THRESH) || (abs(joystick.joy2_y2) > THRESH))
 	{
 		joy2Active = true;
 	}
@@ -220,9 +265,11 @@ task drive()
 {
 	while(true)
 	{
-		if(joy1Btn(05))	//If the 1st joystick button 5 is pressed, commit the following command
+		getJoystickSettings(joystick);
+		//If the 1st joystick button 5 is pressed, change which drive mode it is//
+		if(joy1Btn(05))
 		{
-			if(!toggleSlo)	//If the toggleSlo is false, then commit the following command
+			if(!toggleSlo)
 			{
 				sloMo = !sloMo;
 			}
@@ -232,8 +279,9 @@ task drive()
 		{
 			toggleSlo = false;
 		}
-		getJoystickSettings(joystick);
 		checkActive(JOY_THRESH);
+		//The conditionals here allow each drive to move the robot
+		//The If - Else-If make sure that their commands are exclusive and that the 1st joystick is prioritized
 		if(joy1Active)
 		{
 			if(sloMo)

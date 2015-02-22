@@ -4,7 +4,7 @@
 #include "all_globVars.h"
 #include "JoystickDriver.c"
 #include "hitechnic-angle.h"
-#include "hitechnic-gyro.h"
+#include "hitechnic-irseeker-v2.h"
 
 //odometry based control - position changes - velocity changes
 //gyro based control - angular velocity
@@ -30,6 +30,7 @@ void stopDrive()
 {
 	motor[driveL] = 0;//driveL motor is at 0 power
 	motor[driveR] = 0;//driveR motor is at 0 power
+	wait10Msec(75);
 }
 
 void scoreBall()
@@ -39,7 +40,7 @@ void scoreBall()
 	motor[runBelt] = 0;
 }
 
-void setMotors(int left, int right)
+void setMotors(int left, int right = left)
 {
 	motor[driveL] = left;
 	motor[driveR] = right;
@@ -51,46 +52,83 @@ void encoderReset()
 	nMotorEncoder[runBelt] = 0;
 }
 
-int encDist(int driveL, int driveR)
+bool isInRange(float reference, float compared , float threshold)
 {
-	return ENCODER_CONV * abs(driveR + driveL)/2.0;
+	return abs(reference - compared) < threshold;
 }
 
-float valInRange(float val, float threshold)
+void moveStraight(float distCm, int power)
 {
-	return (abs(val) < threshold) ? 0.0 : val;
-}
-
-float valInRangeMirror(float val, float upLim, float downLim)
-{
-	return (abs(val) > downLim && abs(val) < upLim) ? val : 0.0;
-}
-
-bool isInRange(float heading, float targetHeading, float threshold = 1.0)
-{
-	return abs(heading - targetHeading) <= threshold;
-}
-
-/*void moveStraightDistance(float distCm, int speedL, int speedR)
-{
-	HTANGresetAccumulatedAngle(HTANG);
+	float motPow = 0;
+	encoderReset();
+	int mode = 1;
+	clearTimer(T1);
 	while(true)
 	{
-		writeDebugStreamLine("dist: %f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV);
-		if(distCm > abs((HTANGreadAccumulatedAngle(HTANG) * ANG_CONV)))
+		//opposite sign encoders
+		float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] - nMotorEncoder[runBelt])/2.0;
+		if(!isInRange(distCm, encDist, 0.5))
 		{
-			motor[driveR] = speedR;
-			motor[driveL] = speedL;
+			switch(mode)
+			{
+				case 1:
+					motPow += time100(T1);
+					if(motPow > abs(power))
+					{
+						mode = 2;
+						clearTimer(T1);
+					}
+				break;
+
+				case 2:
+					if(isInRange(distCm, encDist, 5))
+					{
+						motPow -= time100(T1)/10.0;
+						if(motPow <= 0)
+						{
+							motPow = 0;
+						}
+					}
+				break;
+			}
+				motor[driveL] = motPow * sgn(power) * sgn(distCm-encDist);
+				motor[driveR] = motPow * sgn(power) * sgn(distCm-encDist);
+		}
+		else
+		{
+			motor[driveL] = 0;
+			motor[driveR] = 0;
+			break;
+		}
+		writeDebugStreamLine("%d", motPow);
+	}
+}
+
+void moveSpin(float angRad, float power)
+{
+	float motPow = 0;
+	encoderReset();
+	int mode = 1;
+	clearTimer(T1);
+	while(true)
+	{
+		//opposite side encoders
+		float encAng = ENCODER_CONV*abs(nMotorEncoder[runBelt] + nMotorEncoder[driveL])/ROBOT_WID;
+		writeDebugStreamLine("%f, %f", encAng, angRad - encAng);
+		if(!isInRange(angRad, encAng, 0.036))
+		{
+			setMotors(power * pow(angRad-encAng, 0.33)/angRad, -power* pow(angRad-encAng, 0.33)/angRad;
 		}
 		else
 		{
 			stopDrive();
+			break;
 		}
 	}
-}*/
+}
 
 //straight
-void moveStraight(int power, int distCm, int turnParam)
+/*void moveStraight(int power, int distCm, int turnParam)
 {
 	heading = 0.0;
 	encoderReset();
@@ -135,17 +173,7 @@ void moveStraightP(int power, int distCm, int turnParam)
 	stopDrive();
 }
 
-//spin
-void moveSpin(int power, float angRad)
-{
-	HTANGresetAccumulatedAngle(HTANG);
-	while( abs(HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD) < angRad )
-	{
-		setMotors(-power, power);
-		writeDebugStreamLine("%f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD);
-	}
-	stopDrive();
-}
+//spin*/
 
 //turn
 //pivot
