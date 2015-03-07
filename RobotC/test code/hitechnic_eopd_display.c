@@ -9,6 +9,6 @@ task main()
 	{
 		HTEOPDsetShortRange(S1);
 		writeDebugStreamLine("The EOPD value is: %d", HTEOPDreadRaw(sensorEOPD));
-		wait10Msec(100);
+		wait10Msec(10);
 	}
 }
