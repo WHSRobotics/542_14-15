@@ -22,7 +22,7 @@ task main()
 		int dist = rotation * getArc(4.8); */
 
 		float arcT = HTANGreadAccumulatedAngle(HTANG)/600.0 * DIAMETER * PI; //arc of tracking wheel (distance turned)
-		float x = TW_X + ROBOT_R;
+		float x = TW_X + ROBOT_R;a
 		float dc = sqrt(pow(x,2) + pow(TW_Y,2)); //radius between center and tracking wheel
 		float arcR = ((arcT*ROBOT_R)/dc);
 
