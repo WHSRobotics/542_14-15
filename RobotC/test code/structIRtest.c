@@ -3,15 +3,19 @@
 
 #include "hitechnic-irseeker-v2.h"
 
-tHTIRS2 IRSENSE;
+tHTIRS2 irSeeker;
+irSeeker.mode = DSP_1200;
 
 task main()
 {
-	initSensor(&IRSENSE, S1);
+	initSensor(&irSeeker, S1);
 	while(true)
 	{
-		readSensor(&IRSENSE);
-		nxtDisplayTextLine(1, "%a", IRSENSE.acValues);
-		wait10Msec(100);
+		readSensor(&irSeeker);
+		for(int n = 0; n < 5; n++)
+		{
+			nxtDisplayTextLine(n+1, "%d", irSeeker.acValues[n]);
+		}
+		sleep(1000);
 	}
 }
