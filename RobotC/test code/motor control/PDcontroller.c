@@ -37,8 +37,8 @@ task main()
 {
 	nMotorEncoder[driveL] = 0;
 	nMotorEncoder[tubeLift] = 0;
-	float Kp = 0.1;
-	float Kd = 0;
+	float Kp = 0.03;
+	float Kd = 0.0005;
 	float lasterror = 0;
 	int Tp = -50;
 	while (nMotorEncoder[driveL]<3000)

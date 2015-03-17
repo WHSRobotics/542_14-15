@@ -4,17 +4,17 @@
 #include "hitechnic-irseeker-v2.h"
 
 tHTIRS2 irSeeker;
-irSeeker.mode = DSP_1200;
 
 task main()
 {
 	initSensor(&irSeeker, S1);
+	irSeeker.mode = DSP_1200;
 	while(true)
 	{
 		readSensor(&irSeeker);
 		for(int n = 0; n < 5; n++)
 		{
-			nxtDisplayTextLine(n+1, "%d", irSeeker.acValues[n]);
+			displayTextLine(n+1, "%d", irSeeker.acValues[n]);
 		}
 		sleep(1000);
 	}
