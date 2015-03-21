@@ -14,11 +14,12 @@ bool sloMo = false;
 bool headUp = false;
 
 int plateAngleState = 0;
-int ANGLE_GAIN = 5;
+const int ANGLE_GAIN = 5;
 int tiltState = 0;
-int TILT_GAIN = 5;
+const int TILT_GAIN = 5;
 int headState = 0;
-int HEAD_GAIN = 10;
+const int HEAD_GAIN = 10;
+const float ANGLE_MAX = 15.0;
 
 bool goalUp = false;
 bool goalDown = false;

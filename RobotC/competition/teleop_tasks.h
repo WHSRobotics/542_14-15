@@ -51,7 +51,7 @@ task servoControl()
 			//A specific limit is set so that the angle of the plate cannot decrease past 0//
 			if(!toggleAngle)
 			{
-				plateAngleState = ((plateAngleState + sgn(2-joystick.joy2_TopHat)) < 0)
+				plateAngleState = ((float)(abs(plateAngleState + sgn(2-joystick.joy2_TopHat)- ANGLE_MAX/2.0)) > ANGLE_MAX/2.0)
 				?plateAngleState
 				:plateAngleState + sgn(2-joystick.joy2_TopHat);
 			}
@@ -82,7 +82,7 @@ task servoControl()
 		if(abs(2-joystick.joy1_TopHat) == 2)
 		{
 			//Tilt of Redirector (head) can be adjusted incrementally by pressing up and down//
-			//A specific limit is set so that it does not go past the full up position// 
+			//A specific limit is set so that it does not go past the full up position//
 			if(!toggleHead)
 			{
 				headState = ((headState - sgn(2-joystick.joy1_TopHat)) < 0)
@@ -104,8 +104,7 @@ task servoControl()
 			case true:
 				servo[liftR] = 50 + (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
 				servo[liftL] = 220 - (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
-				servo[beltGuard] = 0;
-				servo[intake] = 200;
+				servo[intake] = 221;
 			break;
 
 			case false:
