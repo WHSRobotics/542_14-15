@@ -51,7 +51,7 @@ task main()
 	headUp = true;
 	tubesUp = true;
 	wait10Msec(200);
-	StartTask(servoPush);
-
+	startTask(servoPush);
+	startTask(sensorWallGuide);
 	while(true){};
 }

@@ -5,10 +5,26 @@
 
 task main()
 {
+	eraseDisplay();
+	tHTEOPD eopdSensor;
+
+	initSensor(&eopdSensor, S1);
+
+	while(true)
+	{
+		eopdSensor.shortRange = false;
+		configSensor(&eopdSensor);
+		readSensor(&eopdSensor);
+		displayCenteredTextLine(3, "%d", eopdSensor.processed);
+		wait1Msec(100);
+
+	}
+	/*
+	//Old EOPD program used to check EOPD values
 	while(true)
 	{
 		HTEOPDsetShortRange(S1);
 		writeDebugStreamLine("The EOPD value is: %d", HTEOPDreadRaw(sensorEOPD));
-		wait10Msec(10);
-	}
+		wait1Msec(100);
+	}*/
 }

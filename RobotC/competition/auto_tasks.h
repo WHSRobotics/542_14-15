@@ -5,6 +5,7 @@
 #include "JoystickDriver.c"
 #include "hitechnic-angle.h"
 #include "hitechnic-irseeker-v2.h"
+#include "hitechnic-eopd.h"
 
 //odometry based control - position changes - velocity changes
 //gyro based control - angular velocity
@@ -117,13 +118,32 @@ void moveSpin(float angRad, float power)
 		writeDebugStreamLine("%f, %f", encAng, angRad - encAng);
 		if(!isInRange(angRad, encAng, 0.036))
 		{
-			setMotors(power * pow(angRad-encAng, 0.33)/angRad, -power* pow(angRad-encAng, 0.33)/angRad;
+			setMotors(power * pow(angRad-encAng, 0.33)/angRad, -power* pow(angRad-encAng, 0.33)/angRad);
 		}
 		else
 		{
 			stopDrive();
 			break;
 		}
+	}
+}
+
+task sensorWallGuide()
+{
+	eraseDisplay();
+	tHTEOPD eopdSensor;
+
+	initSensor(&eopdSensor, S1);
+	//HTEOPDsetShortRange(S1);
+	//const int EOPD_MIN_VALUE = 100;
+	//const int EOPD_MAX_VALUE = 300;
+	while(true)
+	{
+		eopdSensor.shortRange = true;
+		configSensor(&eopdSensor);
+		setMotors(70,70);
+		wait1Msec(500);
+		stopDrive();
 	}
 }
 
