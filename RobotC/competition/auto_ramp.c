@@ -50,8 +50,9 @@ task main()
 	plateOpen = true;
 	headUp = true;
 	tubesUp = true;
-	wait10Msec(200);
+
 	startTask(servoPush);
 	startTask(sensorWallGuide);
+
 	while(true){};
 }

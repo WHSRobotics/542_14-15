@@ -33,15 +33,36 @@ task servoControl()
 			//Boolean Conditional here with value setting insures flipflop behavior of plate opening and closing//
 			if(!togglePlate)
 			{
-				plateOpen = !plateOpen;
-				headUp = true;
-				clampDown = plateOpen;
+				if(plateAngleState != 0)
+				{
+					plateAngleState = 0;
+					togglePlate = true;
+				}
+				else
+				{
+					plateOpen = !plateOpen;
+					headUp = true;
+					clampDown = plateOpen;
+					togglePlate = true;
+				}
 			}
-			togglePlate = true;
 		}
 		else
 		{
 			togglePlate = false;
+		}
+
+		if(joy1Btn(01))
+		{
+			if(!toggleIntake)
+			{
+				intakeDown = !intakeDown;
+			}
+			toggleIntake = true;
+		}
+		else
+		{
+			toggleIntake = false;
 		}
 
 		//Commands are executed when the joystick 2 d-pad is at values of 0 or 4 (up and down)//
@@ -104,7 +125,7 @@ task servoControl()
 			case true:
 				servo[liftR] = 50 + (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
 				servo[liftL] = 220 - (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
-				servo[intake] = 221;
+				intakeDown = true;
 			break;
 
 			case false:
@@ -141,6 +162,18 @@ task servoControl()
 			case false:
 				servo[clampL] = 0;
 				servo[clampR] = 255;
+			break;
+		}
+
+		//A switch was used as a simple 2 state automata controlling the intake//
+		switch(intakeDown)
+		{
+			case true:
+				servo[intake] = 221;
+			break;
+
+			case false:
+				servo[intake] = 99;
 			break;
 		}
 	}
@@ -209,18 +242,13 @@ task DCControl()
 		//Automatic Tube lifting (only used in autonomous)//
 		if(tubesUp)
 		{
-			/*
-			nMotorEncoder[tubeLift] = 0;
-			while(nMotorEncoder[tubeLift] < TUBE_LIFT_ROT)
-			{*/
-				motor[tubeLift] = 100;
-				wait10Msec(490);
-				motor[tubeLift] = 0;
-				writeDebugStreamLine("encoder %d", nMotorEncoder[tubeLift]);
-				tubesUp = false;
-			/*}
+			//edit program here
+			motor[tubeLift] = 100;
+			motor[centerLift] = -100;
+			wait10Msec(200);
 			motor[tubeLift] = 0;
-			tubesUp = false;*/
+			motor[centerLift] = 0;
+			tubesUp = false;
 		}
 		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
 		{

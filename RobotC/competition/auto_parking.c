@@ -48,7 +48,6 @@ task main()
 	headUp = true;
 	tubesUp = true;
 	plateOpen = true;
-	wait10Msec(400);
 	StartTask(servoPush);
 
 	while(true){};

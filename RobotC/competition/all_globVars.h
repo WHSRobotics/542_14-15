@@ -7,9 +7,11 @@ bool toggleClamp = false;
 bool toggleTilt = false;
 bool toggleSlo = false;
 bool toggleHead = false;
+bool toggleIntake = false;
 
 bool plateOpen = false;
 bool clampDown = false;
+bool intakeDown = false;
 bool sloMo = false;
 bool headUp = false;
 
@@ -23,6 +25,9 @@ const float ANGLE_MAX = 15.0;
 
 bool goalUp = false;
 bool goalDown = false;
+
+bool centerUp = false;
+bool centerDown = false;
 
 bool intakeIn = false;
 bool intakeOut = false;
@@ -44,6 +49,10 @@ const float ENC_RAD_R = 11.5;
 const float ENC_RAD_L = 7.2;
 const float TUBE_LIFT_ROT = 5125; //4.9 rots
 const float ROBOT_WID = 36.195;
+const float ANG_UNIT_CONV = PI /180.0;
+
+float Kp = 0.03;
+float Kd = 0.0005;
 
 float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] + nMotorEncoder[runBelt])/2.0;
 

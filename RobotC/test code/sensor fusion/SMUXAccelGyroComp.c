@@ -74,7 +74,7 @@ void turn(int setPoint, float Ka,float Kw)
 		int wSet = Ka*errorAng;
 		int errorW = wSet - gyroYaw.rotation;
 		int power = Kw * errorW;
-		//power = Kw * Ka * setPoint - Kw * Ka * yaw - Kw * gyroYaw.rotation;
+		int power = Kw * Ka * setPoint - Kw * Ka * yaw - Kw * gyroYaw.rotation;
 		if(heading == 0)
 		{
 			//break;
