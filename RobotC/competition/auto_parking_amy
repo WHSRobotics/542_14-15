@@ -58,32 +58,29 @@ task main()
 			pos = 2;
 		}
 		moveStraight(83, 30); // check the cm distances :)
-		moveSpin(-50, 1.4);
 		wait10Msec(200);
 	}
 	switch(pos)
 	{
 		case 1: //need to test the route values
-		moveStraight(62, 50);
-		moveSpin(50, 1.4);
-		moveStraight(9, 50);
-		motor[runBelt] = 100;
-
-		wait10Msec(200)
+		moveSpin(-50, 1.4);//power, radiance
+		moveStraight(42, 50);
+		moveSpin(50, 1.4);//power, radiance
+		moveStraight(100, 50);
 		break;
 		case 2: //need to verify the route values
-		moveStraight(102, 50);
-		moveSpin(50, 2);
-		moveStraight(43, 50);
-		motor[runBelt] = 100;
-		wait10Msec(200);
+		moveSpin(-50, 1.4);//power, radiance
+		moveStraight(82, 50);
+		moveSpin(50, 2);//power, radiance
+		moveStraight(100, 50);
 		break;
 		default: //need to verify the route values
 		clearTimer(T1);
+		moveSpin(50, 1.4);//power, radiance
 		moveStraight(156, 30);
-		moveSpin(-50, 1.4);
+		moveSpin(-50, 1.4);//power, radiance
 		moveStraight(20, 50);
-		moveSpin(50, 1.2);
+		moveSpin(50, 1.2);//power, radiance
 		moveStraight(150, 50);
 		wait10Msec(6000);
 		break;
