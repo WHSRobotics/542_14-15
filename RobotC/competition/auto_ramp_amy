@@ -51,11 +51,11 @@ task main()
 	while( time1[T1] < 500)
        //need to varify timer value and ir sensor values
 	{
-		if (irSeeker.acValues[2] > 35)
+		if (irSeeker.acValues[2] > 60)
 		{
 			pos = 1;
 		}
-		else if (irSeeker.acValues[2] > 30 && irSeeker.acValues[2] < 35)
+		else if (irSeeker.acValues[2] > 40 && irSeeker.acValues[2] < 60)
 		{
 			pos = 2;
 		}
@@ -69,28 +69,22 @@ task main()
 	switch(pos)
 	{
 		case 1: //need to verify the route values
-		moveStraight(124, 50);
-		moveSpin(50, 1.4);
+		moveStraight(104, 50);
+		moveSpin(50, 1.4); //power, radiance 
 		moveStraight(62, 50);
-		moveSpin(50, 1.4);
-		moveStraight(31, 50);
-		motor[runBelt] = 100;
-		wait10Msec(200);
 		break;
 		case 2: //need to verify the route values
 		moveStraight(124, 50);
-		moveSpin(-50, 2);
-		moveStraight(25, 50);
-		motor[runBelt] = 100;
-		wait10Msec(200);
+		moveSpin(-50, 2);//power, radiance 
+		moveStraight(85, 50);
 		break;
 		default: //need to verify the route values
 		clearTimer(T1);
-		moveSpin(50, 1.4);
+		moveSpin(50, 1.4);//power, radiance 
 		moveStraight(62, 30);
-		moveSpin(-50, 1.4);
+		moveSpin(-50, 1.4);//poewr, radiance
 		moveStraight(74, 50);
-		moveSpin(50, .5);
+		moveSpin(50, .5);//power, radiance
 		moveStraight(93, 50);
 		wait10Msec(6000);
 		break;
