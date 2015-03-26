@@ -1,28 +1,19 @@
 #ifndef ALL_GLOBVARS.H;
 #define ALL_GLOBVARS.H;
 
-bool togglePlate = false;
-bool toggleAngle = false;
-bool toggleClamp = false;
-bool toggleTilt = false;
-bool toggleSlo = false;
-bool toggleHead = false;
-bool toggleIntake = false;
-
+//State control booleans//
 bool plateOpen = false;
 bool clampDown = false;
 bool intakeDown = false;
 bool sloMo = false;
 bool headUp = false;
+bool lidClosed = false;
+bool valveOpen = false;
 
 int plateAngleState = 0;
-const int ANGLE_GAIN = 5;
 int tiltState = 0;
-const int TILT_GAIN = 5;
-int headState = 0;
-const int HEAD_GAIN = 10;
-const float ANGLE_MAX = 15.0;
 
+//Actuator control booleans//
 bool goalUp = false;
 bool goalDown = false;
 
@@ -35,28 +26,35 @@ bool intakeOut = false;
 bool pushOut = false;
 bool tubesUp = false;
 
+//KONSTANTS//
+const int ANGLE_GAIN = 5;
+const int TILT_GAIN = 5;
+const float ANGLE_MAX = 15.0;
+
 const int JOY_THRESH = 16;
 
-//joystick activity vars
-bool joy1Active = false;
-bool joy2Active = false;
+const float ENC_CONV = PI * 10.16/1120.0;
 
-//auto program
-const float ENCODER_CONV = PI * 10.16/1120.0;
-const float dT = 0.02;
 const float ANG_CONV = 7.62 * PI/600.0;
-const float ENC_RAD_R = 11.5;
-const float ENC_RAD_L = 7.2;
-const float TUBE_LIFT_ROT = 5125; //4.9 rots
-const float ROBOT_WID = 36.195;
-const float ANG_UNIT_CONV = PI /180.0;
 
-float Kp = 0.03;
-float Kd = 0.0005;
+const float ROBOT_WID_CM = 36.195;
+const float ROBOT_H_WID_CM = 18.0975;
+const float ROBOT_H_WID_IN = 7.125;
 
-float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] + nMotorEncoder[runBelt])/2.0;
+const float DEG_TO_RAD = PI /180.0;
 
-int IR_A, IR_B, IR_C, IR_D, IR_E;
+const float dT = 0.032;
+
+const float TAU_PITCH = 0.95;
+const float ALPHA_PITCH = TAU_PITCH/(TAU_PITCH + dT);
+const float ALPHA_PITCH_COMP = 1.0 - ALPHA_PITCH;
+
+int x_offset = 0;
+int y_offset = 0;
+int z_offset = 0;
+
+float pitch = 0.0;
+float yaw = 0.0;
 
 
 #endif;

@@ -5,6 +5,20 @@
 #include "all_globVars.h"
 #include "JoystickDriver.c"
 
+//TOGGLE BOOLS
+bool togglePlate = false;
+bool toggleIntake = false;
+bool toggleAngle = false;
+bool toggleTilt = false;
+bool toggleClamp = false;
+bool toggleSlo = false;
+bool toggleValve = false;
+bool toggleLid = false;
+
+//JOYSTICK ACTIVITY BOOLS
+bool joy1Active = false;
+bool joy2Active = false;
+
 //FUNCTIONS
 //A Value on a defined domain is mapped to a defined range//
 //Example usage: Joystick Value to Servo Position//
@@ -44,6 +58,7 @@ task servoControl()
 					headUp = true;
 					clampDown = plateOpen;
 					togglePlate = true;
+					intakeDown = true;
 				}
 			}
 		}
@@ -52,7 +67,55 @@ task servoControl()
 			togglePlate = false;
 		}
 
-		if(joy1Btn(01))
+		if(joy1Btn(04))
+		{
+			if(!toggleLid)
+			{
+				lidClosed = !lidClosed;
+			}
+			toggleLid = true;
+		}
+		else
+		{
+			toggleLid = false;
+		}
+
+		switch(lidClosed)
+		{
+			case true:
+				servo[headLid] = 55;
+			break;
+
+			case false:
+				servo[headLid] = 0;
+			break;
+		}
+
+		if(joy1Btn(03))
+		{
+			if(!toggleValve)
+			{
+				valveOpen = !valveOpen;
+			}
+			toggleValve = true;
+		}
+		else
+		{
+			toggleValve = false;
+		}
+
+		switch(valveOpen)
+		{
+			case true:
+				servo[headValve] = 45;
+			break;
+
+			case false:
+				servo[headValve] = 145;
+			break;
+		}
+
+		if(joy2Btn(07))
 		{
 			if(!toggleIntake)
 			{
@@ -100,22 +163,6 @@ task servoControl()
 		}
 
 		//Commands are executed when the joystick 1 d-pad is at values of 0 or 4 (up and down)//
-		if(abs(2-joystick.joy1_TopHat) == 2)
-		{
-			//Tilt of Redirector (head) can be adjusted incrementally by pressing up and down//
-			//A specific limit is set so that it does not go past the full up position//
-			if(!toggleHead)
-			{
-				headState = ((headState - sgn(2-joystick.joy1_TopHat)) < 0)
-				?headState
-				:headState - sgn(2-joystick.joy1_TopHat);
-			}
-			toggleHead = true;
-		}
-		else
-		{
-			toggleHead = false;
-		}
 
 		//A switch was used as a simple 2 state automata controlling the plate//
 		//A switch was also used to keep states mutually exclusive in the while loop//
@@ -125,7 +172,6 @@ task servoControl()
 			case true:
 				servo[liftR] = 50 + (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
 				servo[liftL] = 220 - (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
-				intakeDown = true;
 			break;
 
 			case false:
@@ -150,6 +196,20 @@ task servoControl()
 		{
 			toggleClamp = false;
 		}
+
+		switch(headUp)
+		{
+			case false:
+				servo[headL] = 0;
+				servo[headR] = 255;
+			break;
+
+			case true:
+				servo[headL] = 120;
+				servo[headR] = 95;
+			break;
+		}
+		//wiggle values 255, 0
 
 		//A switch was used as a simple 2 state automata controlling the clamp//
 		switch(clampDown)
@@ -191,7 +251,7 @@ task servoPush()
 			{
 				case false:
 					servo[pushR] = 5;
-					wait10msec(10);
+					wait10Msec(10);
 					servo[pushL] = 235;
 					if(joy2Btn(05))
 					{
@@ -233,30 +293,35 @@ task DCControl()
 		: (joy1Btn(08) || intakeOut)
 		? -100
 		: 0;
-		//Why is this here and not in servo control?//
-		if(headUp)
+
+		if(joy1Btn(05)||centerUp)
 		{
-			servo[headL] = 20 + headState * HEAD_GAIN;
-			servo[headR] = 230 - headState * HEAD_GAIN;
+			motor[centerLift] = 100;
+		}
+		else if(joy1Btn(07) || centerDown)
+		{
+			motor[centerLift] = -100;
+		}
+		else if(!((joy1Btn(02)&&joy2Btn(02))||tubesUp))
+		{
+			motor[centerLift] = 0;
 		}
 		//Automatic Tube lifting (only used in autonomous)//
-		if(tubesUp)
+		if((joy1Btn(02)&&joy2Btn(02))||tubesUp)	//If both joysticks press their button 2 then commit the following command
 		{
-			//edit program here
 			motor[tubeLift] = 100;
-			motor[centerLift] = -100;
-			wait10Msec(200);
+			motor[centerLift] = -75;
+			if(tubesUp)
+			{
+				//AMY DANIEL ADJUST THIS AS NECESSARY!!!!//
+				sleep(4750);
+				tubesUp = false;
+			}
+		}
+		else if(!((joy1Btn(05)||centerUp) || (joy1Btn(07) || centerDown)))
+		{
 			motor[tubeLift] = 0;
 			motor[centerLift] = 0;
-			tubesUp = false;
-		}
-		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
-		{
-			motor[tubeLift] = 100;
-		}
-		else
-		{
-			motor[tubeLift] = 0;
 		}
 	}
 }
@@ -294,7 +359,7 @@ task drive()
 	{
 		getJoystickSettings(joystick);
 		//If the 1st joystick button 5 is pressed, change which drive mode it is//
-		if(joy1Btn(05))
+		if(joy1Btn(01))
 		{
 			if(!toggleSlo)
 			{
