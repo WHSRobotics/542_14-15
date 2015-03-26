@@ -31,8 +31,9 @@
 #include "teleop_tasks.h"
 #include "auto_tasks.h"
 
-///////Moving from the parking zone///////
-
+//------------[AUTO:PARKING ZONE]------------//
+//Position: Right edge of left mat of parking//
+//Orientation: Intake forward, sensor forward//
 task main()
 {
 	initializeRobot();
@@ -45,10 +46,13 @@ task main()
 	startTask(DCControl);
 	startTask(servoControl);
 
-	//tubesUp = true;
-	//headUp = true;
+	//1. Tubes Go Up//
+	tubesUp = true;
+	//2. Head Goes Up//
+	headUp = true;
 
 	int pos = 0;
+	//3. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
@@ -72,20 +76,20 @@ task main()
 
 	switch(pos)
 	{
-		//Knock kickstand Down
+		//4a. Knock kickstand down//
 		case 1:
 		moveStraight(70, 109);
 		spinDeg(-90.0);
 		moveStraight(70, 20);
 		break;
 
-		//Knock Kickstand down
+		//4b. Knock kickstand down//
 		case 2:
 		moveStraight(70, 120);
 		spinDeg(90.0);
 		break;
 
-		//Knock kickstand down
+		//4c. Knock kickstand down ;)//
 		case 3:
 		spinDeg(45.0);
 		moveStraight(70, 20.0);
@@ -93,7 +97,7 @@ task main()
 		moveStraight(70, 100.0);
 		break;
 
-		//Go to goals//
+		//4d. Go to goals//
 		default:
 		moveStraight(70, 70);
 		spinDeg(31.0);

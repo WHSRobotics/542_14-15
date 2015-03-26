@@ -67,6 +67,7 @@ task servoControl()
 			togglePlate = false;
 		}
 
+		//HeadLid State toggle triggered by Joy1Btn4//
 		if(joy1Btn(04))
 		{
 			if(!toggleLid)
@@ -80,6 +81,7 @@ task servoControl()
 			toggleLid = false;
 		}
 
+		//State switch//
 		switch(lidClosed)
 		{
 			case true:
@@ -91,6 +93,7 @@ task servoControl()
 			break;
 		}
 
+		//headValve State toggle triggered by joy1Btn3//
 		if(joy1Btn(03))
 		{
 			if(!toggleValve)
@@ -104,6 +107,7 @@ task servoControl()
 			toggleValve = false;
 		}
 
+		//state switch//
 		switch(valveOpen)
 		{
 			case true:
@@ -115,6 +119,7 @@ task servoControl()
 			break;
 		}
 
+		//Intake State toggle triggered by joy2Btn7//
 		if(joy2Btn(07))
 		{
 			if(!toggleIntake)
@@ -197,6 +202,7 @@ task servoControl()
 			toggleClamp = false;
 		}
 
+		//State switch//
 		switch(headUp)
 		{
 			case false:
@@ -209,7 +215,6 @@ task servoControl()
 				servo[headR] = 95;
 			break;
 		}
-		//wiggle values 255, 0
 
 		//A switch was used as a simple 2 state automata controlling the clamp//
 		switch(clampDown)
@@ -302,10 +307,12 @@ task DCControl()
 		{
 			motor[centerLift] = -100;
 		}
+		//This conditional is to make sure only one set of commands are being run at a time//
 		else if(!((joy1Btn(02)&&joy2Btn(02))||tubesUp))
 		{
 			motor[centerLift] = 0;
 		}
+
 		//Automatic Tube lifting (only used in autonomous)//
 		if((joy1Btn(02)&&joy2Btn(02))||tubesUp)	//If both joysticks press their button 2 then commit the following command
 		{
@@ -313,11 +320,12 @@ task DCControl()
 			motor[centerLift] = -75;
 			if(tubesUp)
 			{
-				//AMY DANIEL ADJUST THIS AS NECESSARY!!!!//
+				//AMY DANIEL ADJUST THIS TIMING AS NECESSARY//
 				sleep(4750);
 				tubesUp = false;
 			}
 		}
+		//This conditional is to make sure only one set of commands are being run at a time//
 		else if(!((joy1Btn(05)||centerUp) || (joy1Btn(07) || centerDown)))
 		{
 			motor[tubeLift] = 0;

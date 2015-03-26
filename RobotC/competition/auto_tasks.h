@@ -10,12 +10,7 @@
 #include "hitechnic-gyro.h"
 #include "hitechnic-accelerometer.h"
 
-//odometry based control - position changes - velocity changes
-//gyro based control - angular velocity
-//encoder based control - position changes of each side - velocity of motors
-//compass based control
-
-//Sensor Struct Definitions
+//Sensor Struct Definitions//
 tHTGYRO gyroPitch;
 tHTGYRO gyroYaw;
 tHTGYRO compass;
@@ -34,40 +29,11 @@ void initializeRobot()
 	servo[intake] = 99;
 	servo[headL] = 0;
 	servo[headR] = 255;
+	servo[headValve] = 145;
 	return;
 }
 
-void stopDrive()
-{
-	motor[driveL] = 0;//driveL motor is at 0 power
-	motor[driveR] = 0;//driveR motor is at 0 power
-	sleep(500);
-}
-
-void scoreBall()
-{
-	motor[runBelt] = 100;
-	wait10Msec(250);
-	motor[runBelt] = 0;
-}
-
-void setMotors(int left, int right = left)
-{
-	motor[driveL] = left;
-	motor[driveR] = right;
-}
-
-void encoderReset()
-{
-	nMotorEncoder[driveL] = 0;
-	nMotorEncoder[tubeLift] = 0;
-}
-
-bool isInRange(float reference, float compared , float threshold)
-{
-	return abs(reference - compared) < threshold;
-}
-
+//----[SENSOR TASKS AND FUNCTIONS]----//
 void measureVelocity(int power)
 {
 	for(int i = 0; i < 5; i++)
@@ -75,7 +41,7 @@ void measureVelocity(int power)
 		motor[driveL] = -power;
 		motor[driveR] = power;
 		sleep(500);
-		//writeDebugStreamLine("speed: %f", gyroYaw.rotation * DEG_TO_RAD * ROBOT_H_WID_IN);
+		displayTextLine(i+1,"speed: %f", gyroYaw.rotation * DEG_TO_RAD * ROBOT_H_WID_IN);
 	}
 	motor[driveL] = 0;
 	motor[driveR] = 0;
@@ -95,6 +61,12 @@ void resetBiasAccel()
 	x_offset += 200;
 }
 
+void encoderReset()
+{
+	nMotorEncoder[driveL] = 0;
+	nMotorEncoder[tubeLift] = 0;
+}
+
 void initializeSensors()
 {
 	initSensor(&gyroPitch, msensor_S3_2);
@@ -112,6 +84,51 @@ void calibrateSensors()
 	sensorCalibrate(&gyroPitch);
 }
 
+//Updates sensor values//
+task sensorPoll()
+{
+	while(true)
+	{
+		while (time1[T1] < 32)
+		{sleep(1);}
+		time1[T1]=0;
+		readSensor(&gyroPitch);
+		pitch += gyroPitch.rotation * dT;
+		pitch *= ALPHA_PITCH;
+		readSensor(&accel);
+		pitch += ALPHA_PITCH_COMP * atan2(accel.x - x_offset, accel.z - z_offset)/DEG_TO_RAD;
+		yaw = ENC_CONV*(nMotorEncoder[tubeLift]-nMotorEncoder[driveL])/ROBOT_WID_CM/DEG_TO_RAD;
+	}
+}
+
+//Displays sensor values//
+task display()
+{
+	disableDiagnosticsDisplay();
+	while(true)
+	{
+		displayTextLine(2, "Pitch:%f", pitch);
+		displayTextLine(3, "Yaw:%f", yaw);
+		sleep(100);
+		eraseDisplay();
+	}
+}
+
+//----[AUTO CONTROL FUNCTIONS]----//
+void stopDrive()
+{
+	motor[driveL] = 0;//driveL motor is at 0 power
+	motor[driveR] = 0;//driveR motor is at 0 power
+	sleep(500);
+}
+
+void scoreBall()
+{
+	motor[runBelt] = 100;
+	wait10Msec(250);
+	motor[runBelt] = 0;
+}
+
 void moveStraight(int power, float distCm)
 {
 	encoderReset();
@@ -123,7 +140,7 @@ void moveStraight(int power, float distCm)
 	float lastError = 0;
 	int loopCount = 0;
 	float distTravCm = 0.0;
-	//distance
+
 	while(true)
 	{
 		loopCount += 1;
@@ -136,13 +153,13 @@ void moveStraight(int power, float distCm)
 		lastError = error;
 		if(abs(distCm - distTravCm) < 1)
 		{
-			displayTextLine(2, "Err:%f", distCm - distTravCm);
 			stopDrive();
 			break;
 		}
 	}
 }
 
+//Positive Degrees clockwise, Negative Degrees counter//
 void spinDeg(float angDegrees)
 {
 	encoderReset();
@@ -173,35 +190,6 @@ void spinDeg(float angDegrees)
 			stopDrive();
 			break;
 		}
-	}
-}
-
-task sensorPoll()
-{
-	while(true)
-	{
-		while (time1[T1] < 32)
-		{sleep(1);}
-		time1[T1]=0;
-		readSensor(&gyroPitch);
-		pitch += gyroPitch.rotation * dT;
-		pitch *= ALPHA_PITCH;
-		readSensor(&accel);
-		pitch += ALPHA_PITCH_COMP * atan2(accel.x - x_offset, accel.z - z_offset)/DEG_TO_RAD;
-		//readSensor(&angEnc);
-		yaw = ENC_CONV*(nMotorEncoder[tubeLift]-nMotorEncoder[driveL])/ROBOT_WID_CM/DEG_TO_RAD;
-	}
-}
-
-task display()
-{
-	disableDiagnosticsDisplay();
-	while(true)
-	{
-		displayTextLine(2, "Pitch:%f", pitch);
-		displayTextLine(3, "Yaw:%f", yaw);
-		sleep(100);
-		eraseDisplay();
 	}
 }
 
