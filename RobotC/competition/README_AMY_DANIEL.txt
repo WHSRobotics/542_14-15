@@ -17,17 +17,20 @@ n5. I'll be writing up some stuff for you guys. Please ask for these:
 	-Sensor Explanations
 	-Pit Judging tips/diagrams (more detailed)
 	-Judging session tips/diagrams (short and sweet!)
+	-You can also ask Proud for help on judging and understanding
 	-Control award stuff
+	-Most of this stuff will likely be in the document Proud has
 	-Anything else you direly need contact by text or phone. I will try to answer to the best of my ability
 
 Some TeleOp Task Notes for Programmers
 n1. Read comments on these files, Ask for help as necessary.
 	teleop_tasks.h
 
-Programmers, Here are some breadcrumbs - things you want to check up and verify
-	b1. tubeLift time
-	b2. Ramp IR values (maybe)
-	b3. Ramp positions (that they match the diagram)
+Programmers, Here are some breadcrumbs - Things to do when you are at competition
+	b1. Test and check the tubeLift time so that lifting works properly
+	b2. Test the Auto Parking Program
+	b3. Test Ramp IR values (if the program is there)
+	b4. Check that IR beacon positions match competition play (I can also send you field diagrams)
 
 Some Auto Notes for Drivers
 n1. Check Mux batteries before match (voltage/or that its on)
