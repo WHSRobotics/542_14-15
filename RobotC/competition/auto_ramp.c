@@ -31,86 +31,85 @@
 #include "auto_tasks.h"
 #include "teleop_tasks.h"
 
-/////Moving down the ramp/////
-
-/*//ramp sequence
-	moveForward(10, 100);
-	while(abs(pitch) > 2)
-	{
-	moveForward(10, 100);
-	}
-	//stop robot*/
-
+//------------[AUTO:RAMP START]------------//
+//Position: Centered on the ramp           //
+//Orientation: Intake forward, sensor forward//
 task main()
 {
 	initializeRobot();
 	waitForStart();
 
+	initializeSensors();
+	calibrateSensors();
+	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	startTask(servoPush);
+	startTask(rampCheck);
 
-	setMotors(70, 70);
-	wait10Msec(300);
-	stopDrive();
+	//1. Go down Ramp//
+	//!WARNING! THIS MOVE STRAIGHT SHOULD STOP WHEN IT DETECTS THE RAMP HAS ENDED//
+	moveStraight(70.0, 180.0);
+	//2. Move to IR checking Position//
+	moveStraight(70.0, 45.72)
+	spinDeg(-90.0);
 
-	plateOpen = true;
-	headUp = true;
-	tubesUp = true;
-
-	while(true){}
-}
-
-	tHTIRS2 irSeeker;
-	initSensor(&irSeeker, S1);
-	irSeeker.mode = DSP_1200;
-
-	irSeeker.acValues[0]; //values 0-4
-
-	int pos = 0;
-	initializeRobot();
-	waitForStart();
-	clearTimer(T1);
-	moveStraight(235, 50);
-	while( time1[T1] < 500)
-       //need to varify timer value and ir sensor values
+	//3. IR Beacon Position Search//
+	for(int i = 0; i < 20; i++)
 	{
-		if (irSeeker.acValues[2] > 60)
+		readSensor(&irSeeker);
+		if (irSeeker.acValues[2] > 45)
 		{
 			pos = 1;
 		}
-		else if (irSeeker.acValues[2] > 40 && irSeeker.acValues[2] < 60)
+		else if(irSeeker.acValues[2] > 25)
 		{
 			pos = 2;
 		}
-		moveSpin(-50, 1.4);
-		moveStraight(75, 30);
-		moveSpin(-50, 1.4);
-		moveStraight(147, 30);
-		moveSpin(50, 1.4);
-		wait10Msec(200);
+		else if(irSeeker.acValues[2] != 0)
+		{
+			pos = 3;
+		}
 	}
+
 	switch(pos)
 	{
-		case 1: //need to verify the route values
-		moveStraight(104, 50);
-		moveSpin(50, 1.4); //power, radiance 
-		moveStraight(62, 50);
+		//4a. Knock kickstand Down//
+		case 1:
+		spinDeg(-45.0);
+		moveStraight(70, 122.0);
+		spinDeg(45.0);
+		moveStraight(70, 100.0);
 		break;
-		case 2: //need to verify the route values
-		moveStraight(124, 50);
-		moveSpin(-50, 2);//power, radiance 
-		moveStraight(85, 50);
+
+		//4b. Knock kickstand Down//
+		case 2:
+		moveStraight(70.0, 71.0);
+		spinDeg(-45.0);
+		moveStraight(70.0, 122.0)
 		break;
-		default: //need to verify the route values
-		clearTimer(T1);
-		moveSpin(50, 1.4);//power, radiance 
-		moveStraight(62, 30);
-		moveSpin(-50, 1.4);//poewr, radiance
-		moveStraight(74, 50);
-		moveSpin(50, .5);//power, radiance
-		moveStraight(93, 50);
-		wait10Msec(6000);
+
+		//4c. Knock kickstand Down//
+		case 3:
+		moveStraight(70.0, 109.0);
+		spinDeg(-90.0);
+		moveStraight(70.0, 20.0);
+		break;
+
+		//4d. Go to goal//
+		default:
+		moveStraight(70.0, 61.0);
+		spinDeg(90.0);
+		moveStraight(70.0, 61.0);
+		spinDeg(45.0);
 		break;
 	}
+
+	//5. Tubes Go Up//
+	tubesUp = true;
+	//Edit this sleep variable with the tubesUp timing//
+	sleep(5000);
+	//6. Head Goes Up//
+	headUp = true;
+
+	while(true){}
 }

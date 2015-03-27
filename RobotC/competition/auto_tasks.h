@@ -18,6 +18,11 @@ tHTAC accel;
 tHTIRS2 irSeeker;
 tHTANG angEnc;
 
+//Strictly Auto Related Variables//
+int pos = 0;
+bool rampStop = false;
+bool rampBottomCheck = false;
+
 void initializeRobot()
 {
 	servo[liftR] = 255;
@@ -114,6 +119,26 @@ task display()
 	}
 }
 
+//Checks the ramp//
+task rampCheck()
+{
+	while(true)
+	{
+		if(abs(pitch + 105.0) < 5.0)
+		{
+			rampBottomCheck = true;
+		}
+		if(rampBottomCheck)
+		{
+			if(abs(pitch + 90.0) < 3.0)
+			{
+				rampStop = true;
+				break;
+			}
+		}
+	}
+}
+
 //----[AUTO CONTROL FUNCTIONS]----//
 void stopDrive()
 {
@@ -138,12 +163,10 @@ void moveStraight(int power, float distCm)
 	float Kp = 1.2;
 	float Kd = 0.0;
 	float lastError = 0;
-	int loopCount = 0;
 	float distTravCm = 0.0;
 
 	while(true)
 	{
-		loopCount += 1;
 		distTravCm = ENC_CONV*abs(nMotorEncoder[tubeLift] + nMotorEncoder[driveL])/2.0;
 		float error = nMotorEncoder[tubeLift] - nMotorEncoder[driveL];
 		float derivative = error - lastError;
@@ -151,12 +174,14 @@ void moveStraight(int power, float distCm)
 		motor[driveR] = power + turn;
 		motor[driveL] = power - turn;
 		lastError = error;
-		if(abs(distCm - distTravCm) < 1)
+		if((abs(distCm - distTravCm) < 1) || rampStop)
 		{
 			stopDrive();
 			break;
 		}
 	}
+	rampStop = false;
+	rampBottomCheck = false;
 }
 
 //Positive Degrees clockwise, Negative Degrees counter//

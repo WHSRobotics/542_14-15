@@ -42,17 +42,10 @@ task main()
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
-	startTask(servoPush);
 	startTask(DCControl);
 	startTask(servoControl);
 
-	//1. Tubes Go Up//
-	tubesUp = true;
-	//2. Head Goes Up//
-	headUp = true;
-
-	int pos = 0;
-	//3. IR Beacon Position Search//
+	//1. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
@@ -68,28 +61,24 @@ task main()
 		{
 			pos = 1;
 		}
-		else
-		{
-			pos = 0;
-		}
 	}
 
 	switch(pos)
 	{
-		//4a. Knock kickstand down//
+		//2a. Knock kickstand down//
 		case 1:
 		moveStraight(70, 109);
 		spinDeg(-90.0);
 		moveStraight(70, 20);
 		break;
 
-		//4b. Knock kickstand down//
+		//2b. Knock kickstand down//
 		case 2:
 		moveStraight(70, 120);
 		spinDeg(90.0);
 		break;
 
-		//4c. Knock kickstand down ;)//
+		//2c. Knock kickstand down ;)//
 		case 3:
 		spinDeg(45.0);
 		moveStraight(70, 20.0);
@@ -97,12 +86,20 @@ task main()
 		moveStraight(70, 100.0);
 		break;
 
-		//4d. Go to goals//
+		//2d. Go to goals//
 		default:
 		moveStraight(70, 70);
 		spinDeg(31.0);
 		moveStraight(70, 200.0);
 		break;
 	}
+
+	//3. Tubes Go Up//
+	tubesUp = true;
+	//Edit this sleep variable with the tubesUp timing//
+	sleep(5000);
+	//4. Head Goes Up//
+	headUp = true;
+	
 	while(true){}
 }
