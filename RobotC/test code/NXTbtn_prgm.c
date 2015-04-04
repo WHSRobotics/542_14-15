@@ -27,10 +27,65 @@
 #pragma config(Servo,  srvo_S1_C3_5,    servo17,              tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo18,              tServoNone)
 
-bool centerNotMain = true;
-bool toggle = false;
-task main()
+//initialize array of boolean variables//
+//have a scrolling function too//
+void preAutoSet()
 {
+	int line = 1;
+	bool toggleState = false;
+	bool toggleLine = false;
+	bool moveOutOfPartnersWay = false;
+	while(true)
+	{
+		int btn = nNxtButtonPressed;
+		if(btn == 3)
+		{
+			if(!toggleState)
+			{
+				//
+			}
+			toggleState = true;
+
+		}
+		else
+		{
+			toggleState = false;
+		}
+
+		//Toggle Through
+		if(btn == 1 || btn == 2)
+		{
+			if(!toggleLine)
+			{
+				btn = (nNxtButtonPressed == 2)
+				? -1
+				:nNxtButtonPressed;
+				line = abs(line + btn - 3.5) > 3.5
+				? line
+				: line+btn;
+			}
+			toggleLine = true;
+		}
+		else
+		{
+			toggleLine = false;
+		}
+		displayTextLine(1, "");
+		displayTextLine(2, "");
+		displayTextLine(3, "");
+		displayTextLine(4, "");
+		displayTextLine(5, "");
+		displayTextLine(6, "");
+		displayTextLine(7, "");
+		sleep(50);
+		eraseDisplay();
+	}
+}
+
+void motorRun()
+{
+	bool centerNotMain = true;
+	bool toggle = false;
 	while(true)
 	{
 		int btn = nNxtButtonPressed;
@@ -94,4 +149,10 @@ task main()
 				motor[centerLift] = 0;
 		}
 	}
+}
+
+task main()
+{
+	motorRun();
+	while(true){}
 }
