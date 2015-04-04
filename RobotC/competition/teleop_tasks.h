@@ -211,8 +211,8 @@ task servoControl()
 			break;
 
 			case true:
-				servo[headL] = 120;
-				servo[headR] = 95;
+				servo[headL] = 120;		//Original value was 120
+				servo[headR] = 95;		//Original value was 95
 			break;
 		}
 
@@ -238,7 +238,7 @@ task servoControl()
 			break;
 
 			case false:
-				servo[intake] = 99;
+				servo[intake] = 59;
 			break;
 		}
 	}
@@ -317,11 +317,11 @@ task DCControl()
 		if((joy1Btn(02)&&joy2Btn(02))||tubesUp)	//If both joysticks press their button 2 then commit the following command
 		{
 			motor[tubeLift] = 100;
-			motor[centerLift] = -75;
+			motor[centerLift] = -5;
 			if(tubesUp)
 			{
 				//AMY DANIEL ADJUST THIS TIMING AS NECESSARY//
-				sleep(4750);
+				sleep(6000);
 				tubesUp = false;
 			}
 		}

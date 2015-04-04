@@ -44,12 +44,13 @@ task main()
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	startTask(rampCheck);
-
+	//startTask(rampCheck);
+	//startTask(display);
 	//1. Go down Ramp//
 	//!WARNING! THIS MOVE STRAIGHT SHOULD STOP WHEN IT DETECTS THE RAMP HAS ENDED//
-	moveStraight(70.0, 180.0);
+	moveStraight(35.0, 150.0);
 	//2. Move to IR checking Position//
+	/*
 	moveStraight(70.0, 45.72)
 	spinDeg(-90.0);
 
@@ -103,11 +104,13 @@ task main()
 		spinDeg(45.0);
 		break;
 	}
-
+	*/
 	//5. Tubes Go Up//
+	plateOpen = true;
+	intakeDown = true;
 	tubesUp = true;
 	//Edit this sleep variable with the tubesUp timing//
-	sleep(5000);
+	sleep(6000);
 	//6. Head Goes Up//
 	headUp = true;
 

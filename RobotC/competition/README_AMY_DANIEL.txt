@@ -27,9 +27,9 @@ n1. Read comments on these files, Ask for help as necessary.
 	teleop_tasks.h
 
 Programmers, Here are some breadcrumbs - Things to do when you are at competition
-	b1. Test and check the tubeLift time so that lifting works properly (currently at 4750 msecs I think)
+	b1. Test and check the tubeLift time so that lifting works properly
 	b2. Test the Auto Parking Program
-	b3. Test Ramp Program
+	b3. Test Ramp IR values (if the program is there)
 	b4. Check that IR beacon positions match competition play (I can also send you field diagrams)
 
 Some Auto Notes for Drivers

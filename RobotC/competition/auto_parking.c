@@ -2,6 +2,8 @@
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S3,     smux1,          sensorI2CCustom)
+#pragma config(Sensor, S4,     smux2,          sensorI2CCustom)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, encoder)
@@ -38,7 +40,8 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-
+	//eraseDisplay();
+	//disableDiagnosticsDisplay();
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
@@ -49,57 +52,77 @@ task main()
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] > 35)
+		if (irSeeker.acValues[3] >= 35 && irSeeker.acValues[3] != 255)
 		{
 			pos = 3;
 		}
-		else if(irSeeker.acValues[1] > 3)
+		else if(irSeeker.acValues[1] > 3 && irSeeker.acValues[1] != 255)
 		{
 			pos = 2;
 		}
-		else if(irSeeker.acValues[2] != 0)
+		else if(irSeeker.acValues[2] != 0 || irSeeker.acValues[2] == 255)
 		{
 			pos = 1;
 		}
 	}
+	/*
+	while(true)
+	{
+		displayCenteredTextLine(2, "%d", irSeeker.acValues[2]);
+		displayCenteredTextLine(3, "%d", irSeeker.acValues[1]);
+		displayCenteredTextLine(4, "%d", irSeeker.acValues[3]);
+		displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
+		displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
+	}
+	*/
 
 	switch(pos)
 	{
+
 		//2a. Knock kickstand down//
 		case 1:
-		moveStraight(70, 109);
-		spinDeg(-90.0);
-		moveStraight(70, 20);
+		default:
+		moveStraight(70.0, 112.0);	//109
+		spinDeg(90.0);
+		moveStraight(80.0, 20.0);
 		break;
 
 		//2b. Knock kickstand down//
 		case 2:
-		moveStraight(70, 120);
-		spinDeg(90.0);
+		moveStraight(70.0, 70.0);  //120
+		spinDeg(45.0);
+		moveStraight(70.0, 80.0);
+		moveStraight(-70.0, 20.0);
 		break;
 
 		//2c. Knock kickstand down ;)//
 		case 3:
+		moveStraight(70.0, 20.0);
 		spinDeg(45.0);
-		moveStraight(70, 20.0);
-		spinDeg(-45.0);
-		moveStraight(70, 100.0);
+		moveStraight(70.0, 95.0);
+		spinDeg(-42.0);
+		moveStraight(80.0, 40.0);
+		spinDeg(30.0);
+		moveStraight(-70.0, 20.0);
 		break;
 
 		//2d. Go to goals//
 		default:
-		moveStraight(70, 70);
-		spinDeg(31.0);
-		moveStraight(70, 200.0);
+		moveStraight(70.0, 40.0);
+		spinDeg(47.0); 		// 31
+		moveStraight(70.0, 215.0);
 		break;
+
 	}
 
 	//3. Tubes Go Up//
+	plateOpen = true;
+	intakeDown = true;
 	tubesUp = true;
 	//Edit this sleep variable with the tubesUp timing//
-	sleep(5000);
+	sleep(6000);
 	//4. Head Goes Up//
 	headUp = true;
-	
+
 	while(true){}
 }

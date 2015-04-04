@@ -31,7 +31,7 @@ void initializeRobot()
 	servo[clampR] = 255;
 	servo[pushR] = 5;
 	servo[pushL] = 235;
-	servo[intake] = 99;
+	servo[intake] = 59;
 	servo[headL] = 0;
 	servo[headR] = 255;
 	servo[headValve] = 145;
@@ -144,7 +144,7 @@ void stopDrive()
 {
 	motor[driveL] = 0;//driveL motor is at 0 power
 	motor[driveR] = 0;//driveR motor is at 0 power
-	sleep(500);
+	sleep(250);
 }
 
 void scoreBall()
@@ -154,7 +154,7 @@ void scoreBall()
 	motor[runBelt] = 0;
 }
 
-void moveStraight(int power, float distCm)
+void moveStraight(float power, float distCm)
 {
 	encoderReset();
 	power = abs(power) > 80

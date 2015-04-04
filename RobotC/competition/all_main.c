@@ -33,7 +33,8 @@
 //----[TELE-OP PROGRAM]----//
 void initializeRobot()
 {
-	servo[intake] = 99;
+	servo[intake] = 59; 	// was 99 for all initialized values of this servo
+												// needs to be less than 64, starting to see it around 59
 	return;
 }
 
