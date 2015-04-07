@@ -72,7 +72,7 @@ task servoControl()
 		{
 			if(!toggleLid)
 			{
-				lidClosed = !lidClosed;
+				lidClosed = (lidClosed + 1)%3;
 			}
 			toggleLid = true;
 		}
@@ -84,11 +84,23 @@ task servoControl()
 		//State switch//
 		switch(lidClosed)
 		{
-			case true:
-				servo[headLid] = 55;
+			case 2:
+				if(ServoValue[headLid] == 200)
+				{
+					servo[headLid] = 90;
+					sleep(300);
+				}
+				else
+				{
+					servo[headLid] = 220;
+				}
 			break;
 
-			case false:
+			case 1:
+				servo[headLid] = 90;
+			break;
+
+			case 0:
 				servo[headLid] = 0;
 			break;
 		}

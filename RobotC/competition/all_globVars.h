@@ -7,7 +7,7 @@ bool clampDown = false;
 bool intakeDown = false;
 bool sloMo = false;
 bool headUp = false;
-bool lidClosed = false;
+int lidClosed = 0;
 bool valveOpen = false;
 
 int plateAngleState = 0;
