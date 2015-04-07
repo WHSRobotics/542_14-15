@@ -3,13 +3,25 @@
 
 #include "all_globVars.h"
 #include "JoystickDriver.c"
-#include "hitechnic-angle.h"
-#include "hitechnic-irseeker-v2.h"
 
-//odometry based control - position changes - velocity changes
-//gyro based control - angular velocity
-//encoder based control - position changes of each side - velocity of motors
-//compass based control -
+#include "hitechnic-irseeker-v2.h"
+#include "hitechnic-angle.h"
+#include "hitechnic-compass.h"
+#include "hitechnic-gyro.h"
+#include "hitechnic-accelerometer.h"
+
+//Sensor Struct Definitions//
+tHTGYRO gyroPitch;
+tHTGYRO gyroYaw;
+tHTGYRO compass;
+tHTAC accel;
+tHTIRS2 irSeeker;
+tHTANG angEnc;
+
+//Strictly Auto Related Variables//
+int pos = 0;
+bool rampStop = false;
+bool rampBottomCheck = false;
 
 void initializeRobot()
 {
@@ -17,20 +29,122 @@ void initializeRobot()
 	servo[liftL] = 5;
 	servo[clampL] = 0;
 	servo[clampR] = 255;
-	servo[pushR] = 130;
-	servo[pushL] = 75;
-	servo[beltGuard] = 255;
-	servo[intake] = 0;
-	servo[headL] = 150;
-	servo[headR] = 90;
+	servo[pushR] = 5;
+	servo[pushL] = 235;
+	servo[intake] = 59;
+	servo[headL] = 0;
+	servo[headR] = 255;
+	servo[headValve] = 145;
 	return;
 }
 
+//----[SENSOR TASKS AND FUNCTIONS]----//
+void measureVelocity(int power)
+{
+	for(int i = 0; i < 5; i++)
+	{
+		motor[driveL] = -power;
+		motor[driveR] = power;
+		sleep(500);
+		displayTextLine(i+1,"speed: %f", gyroYaw.rotation * DEG_TO_RAD * ROBOT_H_WID_IN);
+	}
+	motor[driveL] = 0;
+	motor[driveR] = 0;
+}
+
+void resetBiasAccel()
+{
+	for(int i = 1; i<6; i++)
+	{
+		x_offset += accel.x;
+		y_offset += accel.y;
+		z_offset += accel.z;
+	}
+	x_offset /= 5;
+	y_offset /= 5;
+	z_offset /= 5;
+	x_offset += 200;
+}
+
+void encoderReset()
+{
+	nMotorEncoder[driveL] = 0;
+	nMotorEncoder[tubeLift] = 0;
+}
+
+void initializeSensors()
+{
+	initSensor(&gyroPitch, msensor_S3_2);
+	initSensor(&accel, msensor_S3_1);
+	initSensor(&irSeeker, msensor_S4_3);
+	initSensor(&gyroYaw, msensor_S3_3);
+	initSensor(&compass, msensor_S3_4);
+	initSensor(&angEnc, msensor_S4_1);
+	irSeeker.mode = DSP_1200;
+}
+
+void calibrateSensors()
+{
+	resetBiasAccel();
+	sensorCalibrate(&gyroPitch);
+}
+
+//Updates sensor values//
+task sensorPoll()
+{
+	while(true)
+	{
+		while (time1[T1] < 32)
+		{sleep(1);}
+		time1[T1]=0;
+		readSensor(&gyroPitch);
+		pitch += gyroPitch.rotation * dT;
+		pitch *= ALPHA_PITCH;
+		readSensor(&accel);
+		pitch += ALPHA_PITCH_COMP * atan2(accel.x - x_offset, accel.z - z_offset)/DEG_TO_RAD;
+		yaw = ENC_CONV*(nMotorEncoder[tubeLift]-nMotorEncoder[driveL])/ROBOT_WID_CM/DEG_TO_RAD;
+	}
+}
+
+//Displays sensor values//
+task display()
+{
+	disableDiagnosticsDisplay();
+	while(true)
+	{
+		displayTextLine(2, "Pitch:%f", pitch);
+		displayTextLine(3, "Yaw:%f", yaw);
+		sleep(100);
+		eraseDisplay();
+	}
+}
+
+//Checks the ramp//
+task rampCheck()
+{
+	while(true)
+	{
+		if(abs(pitch + 105.0) < 5.0)
+		{
+			rampBottomCheck = true;
+		}
+		if(rampBottomCheck)
+		{
+			if(abs(pitch + 90.0) < 3.0)
+			{
+				rampStop = true;
+				break;
+			}
+		}
+	}
+}
+
+//----[AUTO CONTROL FUNCTIONS]----//
 void stopDrive()
 {
 	motor[driveL] = 0;//driveL motor is at 0 power
 	motor[driveR] = 0;//driveR motor is at 0 power
-	wait10Msec(75);
+	sleep(250);
 }
 
 void scoreBall()
@@ -40,162 +154,68 @@ void scoreBall()
 	motor[runBelt] = 0;
 }
 
-void setMotors(int left, int right = left)
+void moveStraight(float power, float distCm)
 {
-	motor[driveL] = left;
-	motor[driveR] = right;
-}
-
-void encoderReset()
-{
-	nMotorEncoder[driveL] = 0;
-	nMotorEncoder[runBelt] = 0;
-}
-
-bool isInRange(float reference, float compared , float threshold)
-{
-	return abs(reference - compared) < threshold;
-}
-
-void moveStraight(float distCm, int power)
-{
-	float motPow = 0;
 	encoderReset();
-	int mode = 1;
-	clearTimer(T1);
+	power = abs(power) > 80
+	? sgn(power) * 80
+	: power;
+	float Kp = 1.2;
+	float Kd = 0.0;
+	float lastError = 0;
+	float distTravCm = 0.0;
+
 	while(true)
 	{
-		//opposite sign encoders
-		float encDist = ENCODER_CONV * abs(nMotorEncoder[driveL] - nMotorEncoder[runBelt])/2.0;
-		if(!isInRange(distCm, encDist, 0.5))
+		distTravCm = ENC_CONV*abs(nMotorEncoder[tubeLift] + nMotorEncoder[driveL])/2.0;
+		float error = nMotorEncoder[tubeLift] - nMotorEncoder[driveL];
+		float derivative = error - lastError;
+		float turn = (Kp * error)+(Kd*derivative);
+		motor[driveR] = power + turn;
+		motor[driveL] = power - turn;
+		lastError = error;
+		if((abs(distCm - distTravCm) < 1) || rampStop)
 		{
-			switch(mode)
-			{
-				case 1:
-					motPow += time100(T1);
-					if(motPow > abs(power))
-					{
-						mode = 2;
-						clearTimer(T1);
-					}
-				break;
-
-				case 2:
-					if(isInRange(distCm, encDist, 5))
-					{
-						motPow -= time100(T1)/10.0;
-						if(motPow <= 0)
-						{
-							motPow = 0;
-						}
-					}
-				break;
-			}
-				motor[driveL] = motPow * sgn(power) * sgn(distCm-encDist);
-				motor[driveR] = motPow * sgn(power) * sgn(distCm-encDist);
-		}
-		else
-		{
-			motor[driveL] = 0;
-			motor[driveR] = 0;
+			stopDrive();
 			break;
 		}
-		writeDebugStreamLine("%d", motPow);
 	}
+	rampStop = false;
+	rampBottomCheck = false;
 }
 
-void moveSpin(float angRad, float power)
+//Positive Degrees clockwise, Negative Degrees counter//
+void spinDeg(float angDegrees)
 {
-	float motPow = 0;
 	encoderReset();
-	int mode = 1;
-	clearTimer(T1);
+	float Kp = 0.675;
+	float Ki = 0.81;
+	float Kid = 0.5;
+	float errorAng = 0.0;
+	float intAng = 0.0;
+	float lastError = 0.0;
+	float diff = 0.0;
+	int loopCount = 0;
+	float power = 0.0;
+
 	while(true)
 	{
-		//opposite side encoders
-		float encAng = ENCODER_CONV*abs(nMotorEncoder[runBelt] + nMotorEncoder[driveL])/ROBOT_WID;
-		writeDebugStreamLine("%f, %f", encAng, angRad - encAng);
-		if(!isInRange(angRad, encAng, 0.036))
-		{
-			setMotors(power * pow(angRad-encAng, 0.33)/angRad, -power* pow(angRad-encAng, 0.33)/angRad;
-		}
-		else
+		loopCount += 1;
+		errorAng = angDegrees - yaw;
+		intAng = intAng * Kid + errorAng;
+		power = Kp * errorAng + Ki * intAng;
+		diff = errorAng - lastError;
+
+		motor[driveL] = power;
+		motor[driveR] = -power;
+
+		lastError = errorAng;
+		if(loopCount > (abs(angDegrees)/90.0 * 2100) && abs(diff) < 5.0)
 		{
 			stopDrive();
 			break;
 		}
 	}
 }
-
-//straight
-/*void moveStraight(int power, int distCm, int turnParam)
-{
-	heading = 0.0;
-	encoderReset();
-	wait10Msec(25);
-	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]) < distCm) )
-	{
-		heading += (valInRange(HTGYROreadRot(HTGYRO), 1.0) * dT); //edit for val in range?
-		if(isInRange(heading, 0, 1.0))
-		{
-			setMotors(power, power);
-		}
-		else
-		{//if going backwards - if heading is left of center (-) reduce right
-		//if going back - if heading is right of center (+) reduce left
-		//if going forwards - if heading is left of center (-) reduce right
-		//if going forwards - if heading is right of center (+) reduce left
-			int left = (power > 0)
-			? (heading > 0) ? power : power/turnParam
-			: (heading > 0) ? power/turnParam : power;
-			int right = (power > 0)
-			? (heading > 0) ? power/turnParam : power
-			: (heading > 0) ? power : power/turnParam;
-			setMotors(left, right);
-			wait10Msec(2);
-		}
-	}
-	stopDrive();
-}
-
-void moveStraightP(int power, int distCm, int turnParam)
-{
-	heading = 0.0;
-	encoderReset();
-	wait10Msec(25);
-	while( (encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]) < distCm) )
-	{
-		writeDebugStreamLine("%f", encDist(nMotorEncoder[driveL], nMotorEncoder[runBelt]));
-		heading += valInRange(HTGYROreadRot(HTGYRO), 1.0) * dT; //edit for val in range?
-		setMotors(power - (heading * turnParam), power + (heading * turnParam));
-		wait10Msec(2);
-	}
-	stopDrive();
-}
-
-//spin*/
-
-//turn
-//pivot
-
-/*void moveSpinDistance(float angRad, int speed)
-{
-	HTANGresetAccumulatedAngle(HTANG);
-	while(true)
-	{
-		writeDebugStreamLine("ang: %f", HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD);
-		if(abs(angRad) > abs((HTANGreadAccumulatedAngle(HTANG) * ANG_CONV/ENC_RAD)))
-		{
-			motor[driveR] = -speed * sgn(angRad);
-			motor[driveL] = speed * sgn(angRad);
-		}
-		else
-		{
-			stopDrive();
-		}
-	}
-}*/
-
-
 
 #endif

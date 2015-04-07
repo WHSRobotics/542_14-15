@@ -5,6 +5,20 @@
 #include "all_globVars.h"
 #include "JoystickDriver.c"
 
+//TOGGLE BOOLS
+bool togglePlate = false;
+bool toggleIntake = false;
+bool toggleAngle = false;
+bool toggleTilt = false;
+bool toggleClamp = false;
+bool toggleSlo = false;
+bool toggleValve = false;
+bool toggleLid = false;
+
+//JOYSTICK ACTIVITY BOOLS
+bool joy1Active = false;
+bool joy2Active = false;
+
 //FUNCTIONS
 //A Value on a defined domain is mapped to a defined range//
 //Example usage: Joystick Value to Servo Position//
@@ -33,15 +47,102 @@ task servoControl()
 			//Boolean Conditional here with value setting insures flipflop behavior of plate opening and closing//
 			if(!togglePlate)
 			{
-				plateOpen = !plateOpen;
-				headUp = true;
-				clampDown = plateOpen;
+				if(plateAngleState != 0)
+				{
+					plateAngleState = 0;
+					togglePlate = true;
+				}
+				else
+				{
+					plateOpen = !plateOpen;
+					headUp = true;
+					clampDown = plateOpen;
+					togglePlate = true;
+					intakeDown = true;
+				}
 			}
-			togglePlate = true;
 		}
 		else
 		{
 			togglePlate = false;
+		}
+
+		//HeadLid State toggle triggered by Joy1Btn4//
+		if(joy1Btn(04))
+		{
+			if(!toggleLid)
+			{
+				lidClosed = (lidClosed + 1)%3;
+			}
+			toggleLid = true;
+		}
+		else
+		{
+			toggleLid = false;
+		}
+
+		//State switch//
+		switch(lidClosed)
+		{
+			case 2:
+				if(ServoValue[headLid] == 200)
+				{
+					servo[headLid] = 90;
+					sleep(300);
+				}
+				else
+				{
+					servo[headLid] = 220;
+				}
+			break;
+
+			case 1:
+				servo[headLid] = 90;
+			break;
+
+			case 0:
+				servo[headLid] = 0;
+			break;
+		}
+
+		//headValve State toggle triggered by joy1Btn3//
+		if(joy1Btn(03))
+		{
+			if(!toggleValve)
+			{
+				valveOpen = !valveOpen;
+			}
+			toggleValve = true;
+		}
+		else
+		{
+			toggleValve = false;
+		}
+
+		//state switch//
+		switch(valveOpen)
+		{
+			case true:
+				servo[headValve] = 45;
+			break;
+
+			case false:
+				servo[headValve] = 145;
+			break;
+		}
+
+		//Intake State toggle triggered by joy2Btn7//
+		if(joy2Btn(07))
+		{
+			if(!toggleIntake)
+			{
+				intakeDown = !intakeDown;
+			}
+			toggleIntake = true;
+		}
+		else
+		{
+			toggleIntake = false;
 		}
 
 		//Commands are executed when the joystick 2 d-pad is at values of 0 or 4 (up and down)//
@@ -51,7 +152,7 @@ task servoControl()
 			//A specific limit is set so that the angle of the plate cannot decrease past 0//
 			if(!toggleAngle)
 			{
-				plateAngleState = ((plateAngleState + sgn(2-joystick.joy2_TopHat)) < 0)
+				plateAngleState = ((float)(abs(plateAngleState + sgn(2-joystick.joy2_TopHat)- ANGLE_MAX/2.0)) > ANGLE_MAX/2.0)
 				?plateAngleState
 				:plateAngleState + sgn(2-joystick.joy2_TopHat);
 			}
@@ -79,22 +180,6 @@ task servoControl()
 		}
 
 		//Commands are executed when the joystick 1 d-pad is at values of 0 or 4 (up and down)//
-		if(abs(2-joystick.joy1_TopHat) == 2)
-		{
-			//Tilt of Redirector (head) can be adjusted incrementally by pressing up and down//
-			//A specific limit is set so that it does not go past the full up position// 
-			if(!toggleHead)
-			{
-				headState = ((headState - sgn(2-joystick.joy1_TopHat)) < 0)
-				?headState
-				:headState - sgn(2-joystick.joy1_TopHat);
-			}
-			toggleHead = true;
-		}
-		else
-		{
-			toggleHead = false;
-		}
 
 		//A switch was used as a simple 2 state automata controlling the plate//
 		//A switch was also used to keep states mutually exclusive in the while loop//
@@ -104,8 +189,6 @@ task servoControl()
 			case true:
 				servo[liftR] = 50 + (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
 				servo[liftL] = 220 - (plateAngleState * ANGLE_GAIN) + (tiltState * TILT_GAIN);
-				servo[beltGuard] = 0;
-				servo[intake] = 200;
 			break;
 
 			case false:
@@ -131,6 +214,20 @@ task servoControl()
 			toggleClamp = false;
 		}
 
+		//State switch//
+		switch(headUp)
+		{
+			case false:
+				servo[headL] = 0;
+				servo[headR] = 255;
+			break;
+
+			case true:
+				servo[headL] = 120;		//Original value was 120
+				servo[headR] = 95;		//Original value was 95
+			break;
+		}
+
 		//A switch was used as a simple 2 state automata controlling the clamp//
 		switch(clampDown)
 		{
@@ -142,6 +239,18 @@ task servoControl()
 			case false:
 				servo[clampL] = 0;
 				servo[clampR] = 255;
+			break;
+		}
+
+		//A switch was used as a simple 2 state automata controlling the intake//
+		switch(intakeDown)
+		{
+			case true:
+				servo[intake] = 221;
+			break;
+
+			case false:
+				servo[intake] = 59;
 			break;
 		}
 	}
@@ -159,7 +268,7 @@ task servoPush()
 			{
 				case false:
 					servo[pushR] = 5;
-					wait10msec(10);
+					wait10Msec(10);
 					servo[pushL] = 235;
 					if(joy2Btn(05))
 					{
@@ -201,35 +310,38 @@ task DCControl()
 		: (joy1Btn(08) || intakeOut)
 		? -100
 		: 0;
-		//Why is this here and not in servo control?//
-		if(headUp)
+
+		if(joy1Btn(05)||centerUp)
 		{
-			servo[headL] = 20 + headState * HEAD_GAIN;
-			servo[headR] = 230 - headState * HEAD_GAIN;
+			motor[centerLift] = 100;
 		}
+		else if(joy1Btn(07) || centerDown)
+		{
+			motor[centerLift] = -100;
+		}
+		//This conditional is to make sure only one set of commands are being run at a time//
+		else if(!((joy1Btn(02)&&joy2Btn(02))||tubesUp))
+		{
+			motor[centerLift] = 0;
+		}
+
 		//Automatic Tube lifting (only used in autonomous)//
-		if(tubesUp)
-		{
-			/*
-			nMotorEncoder[tubeLift] = 0;
-			while(nMotorEncoder[tubeLift] < TUBE_LIFT_ROT)
-			{*/
-				motor[tubeLift] = 100;
-				wait10Msec(490);
-				motor[tubeLift] = 0;
-				writeDebugStreamLine("encoder %d", nMotorEncoder[tubeLift]);
-				tubesUp = false;
-			/*}
-			motor[tubeLift] = 0;
-			tubesUp = false;*/
-		}
-		if(joy1Btn(02)&&joy2Btn(02))	//If both joysticks press their button 2 then commit the following command
+		if((joy1Btn(02)&&joy2Btn(02))||tubesUp)	//If both joysticks press their button 2 then commit the following command
 		{
 			motor[tubeLift] = 100;
+			motor[centerLift] = -5;
+			if(tubesUp)
+			{
+				//AMY DANIEL ADJUST THIS TIMING AS NECESSARY//
+				sleep(6000);
+				tubesUp = false;
+			}
 		}
-		else
+		//This conditional is to make sure only one set of commands are being run at a time//
+		else if(!((joy1Btn(05)||centerUp) || (joy1Btn(07) || centerDown)))
 		{
 			motor[tubeLift] = 0;
+			motor[centerLift] = 0;
 		}
 	}
 }
@@ -267,7 +379,7 @@ task drive()
 	{
 		getJoystickSettings(joystick);
 		//If the 1st joystick button 5 is pressed, change which drive mode it is//
-		if(joy1Btn(05))
+		if(joy1Btn(01))
 		{
 			if(!toggleSlo)
 			{
