@@ -102,6 +102,7 @@ task sensorPoll()
 		pitch *= ALPHA_PITCH;
 		readSensor(&accel);
 		pitch += ALPHA_PITCH_COMP * atan2(accel.x - x_offset, accel.z - z_offset)/DEG_TO_RAD;
+		displayTextLine(3, "%f", pitch);
 		yaw = ENC_CONV*(nMotorEncoder[tubeLift]-nMotorEncoder[driveL])/ROBOT_WID_CM/DEG_TO_RAD;
 	}
 }
@@ -124,7 +125,7 @@ task rampCheck()
 {
 	while(true)
 	{
-		if(abs(pitch + 105.0) < 5.0)
+		if(abs(pitch + 75.0) < 5.0)
 		{
 			rampBottomCheck = true;
 		}
