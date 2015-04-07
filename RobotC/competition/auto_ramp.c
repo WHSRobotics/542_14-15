@@ -58,15 +58,15 @@ task main()
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] > 45)
+		if (irSeeker.acValues[2] >= 50)
 		{
 			pos = 1;
 		}
-		else if(irSeeker.acValues[2] > 25)
+		else if(irSeeker.acValues[2] >= 28)
 		{
 			pos = 2;
 		}
-		else if(irSeeker.acValues[2] != 0)
+		else if(irSeeker.acValues[2] == 0)
 		{
 			pos = 3;
 		}
