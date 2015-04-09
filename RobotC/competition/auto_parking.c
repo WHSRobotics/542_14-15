@@ -40,8 +40,8 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-	//eraseDisplay();
-	//disableDiagnosticsDisplay();
+	eraseDisplay();
+	disableDiagnosticsDisplay();
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
@@ -52,7 +52,7 @@ task main()
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] >= 40 && irSeeker.acValues[3] != 255)
+		if (irSeeker.acValues[2] >= 10 && irSeeker.acValues[3] != 255)
 		{
 			pos = 3;
 		}
@@ -60,12 +60,12 @@ task main()
 		{
 			pos = 2;
 		}
-		else if(irSeeker.acValues[2] == 0 || irSeeker.acValues[2] == 255)
+		else if(irSeeker.acValues[2] != 0 || irSeeker.acValues[2] == 255)
 		{
 			pos = 1;
 		}
 	}
-	/*
+
 	while(true)
 	{
 		displayCenteredTextLine(2, "%d", irSeeker.acValues[2]);
@@ -74,14 +74,13 @@ task main()
 		displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
 		displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
 	}
-	*/
 
+/*
 	switch(pos)
 	{
 
 		//2a. Knock kickstand down//
 		case 1:
-		default:
 		moveStraight(70.0, 112.0);	//109
 		spinDeg(90.0);
 		moveStraight(80.0, 20.0);
@@ -109,7 +108,7 @@ task main()
 		//2d. Go to goals//
 		default:
 		moveStraight(70.0, 40.0);
-		spinDeg(47.0); 		// 31
+		spinDeg(44.0); 		// 31
 		moveStraight(70.0, 215.0);
 		break;
 
@@ -123,6 +122,6 @@ task main()
 	sleep(6000);
 	//4. Head Goes Up//
 	headUp = true;
-
+*/
 	while(true){}
 }
