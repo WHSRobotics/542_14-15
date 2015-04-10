@@ -40,56 +40,61 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-	//eraseDisplay();
-	//disableDiagnosticsDisplay();
+	eraseDisplay();
+	disableDiagnosticsDisplay();
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-
+	//moveStraight(100.0, 33.0);
 	//1. IR Beacon Position Search//
+
 	for(int i = 0; i < 20; i++)
 	{
 		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] >= 40 && irSeeker.acValues[3] != 255)
+		if (irSeeker.acValues[3] >= 50)
 		{
 			pos = 3;
 		}
-		else if(irSeeker.acValues[1] >= 4 && irSeeker.acValues[1] != 255)
+		else if(irSeeker.acValues[2] >= 30)
 		{
 			pos = 2;
 		}
-		else if(irSeeker.acValues[2] == 0 || irSeeker.acValues[2] == 255)
+		else if(irSeeker.acValues[3] == 0)
 		{
 			pos = 1;
 		}
 	}
-	/*
 	while(true)
 	{
+		//writeDebugStreamLine("IR Seeker value 0: %d", irSeeker.acValues[0]);
+		//writeDebugStreamLine("IR Seeker value 1: %d", irSeeker.acValues[1]);
+		writeDebugStreamLine("IR Seeker value 2: %d", irSeeker.acValues[2]);
+		//writeDebugStreamLine("IR Seeker value 3: %d", irSeeker.acValues[3]);
+		//writeDebugStreamLine("IR Seeker value 4: %d", irSeeker.acValues[4]);
+		wait1Msec(100);
+	}
+	/*
 		displayCenteredTextLine(2, "%d", irSeeker.acValues[2]);
 		displayCenteredTextLine(3, "%d", irSeeker.acValues[1]);
 		displayCenteredTextLine(4, "%d", irSeeker.acValues[3]);
 		displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
 		displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
-	}
-	*/
-
+	/*
 	switch(pos)
 	{
 
 		//2a. Knock kickstand down//
 		case 1:
-		default:
-		moveStraight(70.0, 112.0);	//109
+		moveStraight(70.0, 62.0);
 		spinDeg(90.0);
-		moveStraight(80.0, 20.0);
+		moveStraight(100.0, 20.0);
 		break;
 
 		//2b. Knock kickstand down//
 		case 2:
-		moveStraight(70.0, 70.0);  //120
+		moveStraight(70.0, 39.0);
 		spinDeg(45.0);
 		moveStraight(70.0, 80.0);
 		moveStraight(-70.0, 20.0);
@@ -97,10 +102,9 @@ task main()
 
 		//2c. Knock kickstand down ;)//
 		case 3:
-		moveStraight(70.0, 20.0);
-		spinDeg(45.0);
-		moveStraight(70.0, 95.0);
-		spinDeg(-42.0);
+		spinDeg(48.0);
+		moveStraight(70.0, 80.0);
+		spinDeg(-44.0);
 		moveStraight(80.0, 40.0);
 		spinDeg(30.0);
 		moveStraight(-70.0, 20.0);
@@ -108,13 +112,12 @@ task main()
 
 		//2d. Go to goals//
 		default:
-		moveStraight(70.0, 40.0);
-		spinDeg(47.0); 		// 31
-		moveStraight(70.0, 215.0);
+		spinDeg(47.0);
+		moveStraight(70.0, 180.0);
 		break;
 
 	}
-
+	/*
 	//3. Tubes Go Up//
 	plateOpen = true;
 	intakeDown = true;
@@ -123,6 +126,6 @@ task main()
 	sleep(6000);
 	//4. Head Goes Up//
 	headUp = true;
-
+*/
 	while(true){}
 }
