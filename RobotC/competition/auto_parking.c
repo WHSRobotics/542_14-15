@@ -47,73 +47,108 @@ task main()
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
+	//moveStraight(100.0, 33.0);
+	int irCounter1 = 0;
+	int irCounter2 = 0;
+	int irCounter3 = 0;
 
 	//1. IR Beacon Position Search//
-	for(int i = 0; i < 20; i++)
+	//while(irCounter1 < 3 || irCounter2 < 3 || irCounter3 < 3)
+	//{
+		for(int i = 0; i < 20; i++)
+		{
+			readSensor(&irSeeker);
+			if(irSeeker.acValues[3] >= 35)
+			{
+				//pos = 3;
+				irCounter1++;
+			}
+			else if(irSeeker.acValues[2] >= 30)
+			{
+				//pos = 2;
+				irCounter2++;
+			}
+			else if(irSeeker.acValues[3] == 0)
+			{
+				//pos = 1;
+				irCounter3++;
+			}
+		}
+	//}
+
+	if(irCounter1 > irCounter3 || irCounter1 > irCounter2)
 	{
-		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] >= 10 && irSeeker.acValues[3] != 255)
-		{
-			pos = 3;
-		}
-		else if(irSeeker.acValues[1] >= 4 && irSeeker.acValues[1] != 255)
-		{
-			pos = 2;
-		}
-		else if(irSeeker.acValues[2] != 0 || irSeeker.acValues[2] == 255)
-		{
-			pos = 1;
-		}
+		pos = 3;
 	}
 
+	else if(irCounter2 > irCounter3 || irCounter2 > irCounter1)
+	{
+		pos = 2;
+	}
+	else if(irCounter3 > irCounter1 || irCounter3 > irCounter2)
+	{
+		pos = 1;
+	}
+	writeDebugStreamLine("irCounter1 : %d", irCounter1);
+	writeDebugStreamLine("irCounter2 : %d", irCounter2);
+	writeDebugStreamLine("irCounter3 : %d", irCounter3);
+	writeDebugStreamLine("pos: %d", pos);
+	/*
 	while(true)
 	{
+		//writeDebugStreamLine("IR Seeker value 0: %d", irSeeker.acValues[0]);
+		//writeDebugStreamLine("IR Seeker value 1: %d", irSeeker.acValues[1]);
+		writeDebugStreamLine("IR Seeker value 2: %d", irSeeker.acValues[2]);
+		//writeDebugStreamLine("IR Seeker value 3: %d", irSeeker.acValues[3]);
+		//writeDebugStreamLine("IR Seeker value 4: %d", irSeeker.acValues[4]);
+		wait1Msec(100);
+	}
+	*/
 		displayCenteredTextLine(2, "%d", irSeeker.acValues[2]);
 		displayCenteredTextLine(3, "%d", irSeeker.acValues[1]);
 		displayCenteredTextLine(4, "%d", irSeeker.acValues[3]);
 		displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
 		displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
-	}
-
-/*
+	/*
 	switch(pos)
 	{
 
 		//2a. Knock kickstand down//
 		case 1:
-		moveStraight(70.0, 112.0);	//109
+		moveStraight(70.0, 62.0);
 		spinDeg(90.0);
-		moveStraight(80.0, 20.0);
+		moveStraight(100.0, 20.0);
+		moveStraight(50.0, 20.0);
 		break;
 
 		//2b. Knock kickstand down//
-		case 2:
-		moveStraight(70.0, 70.0);  //120
-		spinDeg(45.0);
+		//case 2:
+		default:
+		moveStraight(70.0, 34.0);
+		spinDeg(47.0);
 		moveStraight(70.0, 80.0);
-		moveStraight(-70.0, 20.0);
+		moveStraight(-70.0, 30.0);
 		break;
 
 		//2c. Knock kickstand down ;)//
-		case 3:
-		moveStraight(70.0, 20.0);
-		spinDeg(45.0);
-		moveStraight(70.0, 95.0);
-		spinDeg(-42.0);
-		moveStraight(80.0, 40.0);
-		spinDeg(30.0);
+		//case 3:
+		default:
+		spinDeg(48.0);
+		moveStraight(70.0, 80.0);
+		spinDeg(-44.0);
+		moveStraight(80.0, 43.0);
+		//spinDeg(30.0);
 		moveStraight(-70.0, 20.0);
 		break;
-
+		/*
 		//2d. Go to goals//
 		default:
-		moveStraight(70.0, 40.0);
-		spinDeg(44.0); 		// 31
-		moveStraight(70.0, 215.0);
+		spinDeg(47.0);
+		moveStraight(70.0, 180.0);
 		break;
 
 	}
-
+	/*
 	//3. Tubes Go Up//
 	plateOpen = true;
 	intakeDown = true;

@@ -46,7 +46,7 @@ task main()
 	startTask(servoControl);
 	startTask(rampCheck);
 	//1. Go down Ramp//
-	moveStraight(50.0, 150.0);
+	moveStraight(50.0, 200.0);
 	//2. Move to IR checking Position//
 	/*
 	moveStraight(70.0, 45.72)
