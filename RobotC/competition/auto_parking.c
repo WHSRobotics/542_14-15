@@ -71,6 +71,7 @@ task main()
 	{
 		pos = 3;
 	}
+
 	else if(irCounter2 > irCounter3 || irCounter2 > irCounter1)
 	{
 		pos = 2;
