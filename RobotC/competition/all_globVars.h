@@ -65,5 +65,9 @@ int z_offset = 0;
 float pitch = 0.0;
 float yaw = 0.0;
 
+//IR Counters//
+int irCounter1 = 0;
+int irCounter2 = 0;
+int irCounter3 = 0;
 
 #endif;
