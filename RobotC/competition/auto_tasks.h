@@ -76,10 +76,10 @@ void initializeSensors()
 {
 	initSensor(&gyroPitch, msensor_S3_2);
 	initSensor(&accel, msensor_S3_1);
-	initSensor(&irSeeker, msensor_S4_3);
-	initSensor(&gyroYaw, msensor_S3_3);
-	initSensor(&compass, msensor_S3_4);
-	initSensor(&angEnc, msensor_S4_1);
+	//initSensor(&irSeeker, msensor_S4_3);
+	//initSensor(&gyroYaw, msensor_S3_3);
+	//initSensor(&compass, msensor_S3_4);
+	//initSensor(&angEnc, msensor_S3_4);
 	irSeeker.mode = DSP_1200;
 }
 
@@ -160,7 +160,7 @@ void moveStraight(float power, float distCm)
 	encoderReset();
 	power = abs(power) > 80
 	? sgn(power) * 80
-	: power;
+: power;
 	float Kp = 1.2;
 	float Kd = 0.0;
 	float lastError = 0;

@@ -3,7 +3,7 @@
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     smux1,          sensorI2CCustom)
-#pragma config(Sensor, S4,     smux2,          sensorI2CCustom)
+#pragma config(Sensor, S4,     irSensor,       sensorHiTechnicIRSeeker1200)
 #pragma config(Motor,  mtr_S1_C4_1,     runBelt,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     goalLift,      tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_1,     tubeLift,      tmotorTetrix, openLoop, encoder)
@@ -40,38 +40,50 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-	//eraseDisplay();
-	//disableDiagnosticsDisplay();
+	eraseDisplay();
+	disableDiagnosticsDisplay();
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	//moveStraight(100.0, 33.0);
+	moveStraight(70.0, 30.0);
 
 	//1. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
+
+		writeDebugStreamLine("irSeeker.acValues[0]: %d", irSeeker.acValues[0]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[1]: %d", irSeeker.acValues[1]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[2]: %d", irSeeker.acValues[2]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[3]: %d", irSeeker.acValues[3]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[4]: %d", irSeeker.acValues[4]);
+		wait1Msec(100);
+	//writeDebugStreamLine("%f", pitch);
+	//wait1Msec(100);
 		readSensor(&irSeeker);
 		if(irSeeker.acValues[3] >= 35)
 		{
 			irCounter1++;
 		}
-		else if(irSeeker.acValues[2] >= 30)
+		else if(irSeeker.acValues[2] >= 40)
 		{
 			irCounter2++;
 		}
-		else if(irSeeker.acValues[3] == 0)
+		else if(irSeeker.acValues[3] < 50)
 		{
 			irCounter3++;
 		}
 	}
 
-	if(irCounter1 > irCounter3 && irCounter1 > irCounter2)
+	if(irCounter1 > irCounter3 || irCounter1 > irCounter2)
 	{
 		pos = 3;
 	}
-
 	else if(irCounter2 > irCounter3 || irCounter2 > irCounter1)
 	{
 		pos = 2;
@@ -80,23 +92,23 @@ task main()
 	{
 		pos = 1;
 	}
-	/*
+
 	writeDebugStreamLine("irCounter1 : %d", irCounter1);
 	writeDebugStreamLine("irCounter2 : %d", irCounter2);
 	writeDebugStreamLine("irCounter3 : %d", irCounter3);
 	writeDebugStreamLine("pos: %d", pos);
-
+/*
 	displayCenteredTextLine(2, "%d", irSeeker.acValues[2]);
 	displayCenteredTextLine(3, "%d", irSeeker.acValues[1]);
 	displayCenteredTextLine(4, "%d", irSeeker.acValues[3]);
 	displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
 	displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
-	*/
+
 	switch(pos)
 	{
 		//2a. Knock kickstand down//
 		case 1:
-		moveStraight(70.0, 62.0);
+		moveStraight(70.0, 65.0);
 		spinDeg(90.0);
 		moveStraight(100.0, 20.0);
 		moveStraight(50.0, 20.0);
@@ -104,20 +116,20 @@ task main()
 
 		//2b. Knock kickstand down//
 		case 2:
-		moveStraight(70.0, 34.0);
-		spinDeg(47.0);
+		moveStraight(70.0, 30.0);
+		spinDeg(45.0);
 		moveStraight(70.0, 80.0);
 		moveStraight(-70.0, 30.0);
 		break;
 
 		//2c. Knock kickstand down ;)//
 		case 3:
-		spinDeg(48.0);
-		moveStraight(70.0, 80.0);
+		spinDeg(46.0);
+		moveStraight(70.0, 79.0);
 		spinDeg(-44.0);
-		moveStraight(80.0, 43.0);
+		moveStraight(80.0, 45.0);
 		//spinDeg(30.0);
-		moveStraight(-70.0, 20.0);
+		moveStraight(-70.0, 23.0);
 		break;
 
 		//2d. Go to goals//
