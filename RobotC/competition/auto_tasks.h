@@ -76,7 +76,7 @@ void initializeSensors()
 {
 	initSensor(&gyroPitch, msensor_S3_2);
 	initSensor(&accel, msensor_S3_1);
-	//initSensor(&irSeeker, msensor_S4_3);
+	initSensor(&irSeeker, S4);
 	//initSensor(&gyroYaw, msensor_S3_3);
 	//initSensor(&compass, msensor_S3_4);
 	//initSensor(&angEnc, msensor_S3_4);

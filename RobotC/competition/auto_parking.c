@@ -47,8 +47,8 @@ task main()
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	moveStraight(70.0, 30.0);
-
+	//moveStraight(70.0, 30.0);
+/*
 	//1. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
@@ -139,7 +139,7 @@ task main()
 		break;
 
 	}
-	/*
+*/
 	//3. Tubes Go Up//
 	plateOpen = true;
 	intakeDown = true;
@@ -148,6 +148,6 @@ task main()
 	sleep(6000);
 	//4. Head Goes Up//
 	headUp = true;
-*/
+
 	while(true){}
 }
