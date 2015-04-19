@@ -51,12 +51,9 @@ const float ROBOT_H_WID_IN = 7.125;
 const float DEG_TO_RAD = PI /180.0;
 
 //Loop time variable//
-const float dT = 0.032;
 
 //Complementary Filter parameters//
-const float TAU_PITCH = 0.95;
-const float ALPHA_PITCH = TAU_PITCH/(TAU_PITCH + dT);
-const float ALPHA_PITCH_COMP = 1.0 - ALPHA_PITCH;
+const float TAU_PITCH = 0.75;
 
 //Sensor Values//
 int x_offset = 0;

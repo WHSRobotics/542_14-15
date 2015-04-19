@@ -42,22 +42,20 @@ task main()
 	waitForStart();
 	initializeSensors();
 	calibrateSensors();
-	//startTask(display);
+	startTask(display);
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	startTask(rampCheck);
 	//1. Go down Ramp//
-
-	moveStraight(25.0, 150.0);
+	rampMove();
 	//2. Move to IR checking Position//
 	spinDeg(-85.0);
-	moveStraight(70.0, 30.0);
+	moveStraight(70.0, 25.0);
 
 	//3. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
-		writeDebugStreamLine("irSeeker.acValues[0]: %d", irSeeker.acValues[0]);
+		/*writeDebugStreamLine("irSeeker.acValues[0]: %d", irSeeker.acValues[0]);
 		wait1Msec(100);
 		writeDebugStreamLine("irSeeker.acValues[1]: %d", irSeeker.acValues[1]);
 		wait1Msec(100);
@@ -66,13 +64,13 @@ task main()
 		writeDebugStreamLine("irSeeker.acValues[3]: %d", irSeeker.acValues[3]);
 		wait1Msec(100);
 		writeDebugStreamLine("irSeeker.acValues[4]: %d", irSeeker.acValues[4]);
-		wait1Msec(100);
+		wait1Msec(100);*/
 		readSensor(&irSeeker);
-		if(irSeeker.acValues[2] >= 70)
+		if(irSeeker.acValues[2] >= 40)
 		{
 			irCounter1++;
 		}
-		else if(irSeeker.acValues[2] >= 28 || irSeeker.acValues[3] > 50)
+		else if(irSeeker.acValues[2] >= 28 || irSeeker.acValues[3] > 20)
 		{
 			irCounter2++;
 		}
@@ -95,24 +93,25 @@ task main()
 		pos = 1;
 	}
 
-	writeDebugStreamLine("irCounter1 : %d", irCounter1);
+	/*writeDebugStreamLine("irCounter1 : %d", irCounter1);
 	writeDebugStreamLine("irCounter2 : %d", irCounter2);
 	writeDebugStreamLine("irCounter3 : %d", irCounter3);
-	writeDebugStreamLine("pos: %d", pos);
+	writeDebugStreamLine("pos: %d", pos);*/
 
 	switch(pos)
 	{
 		//4a. Knock kickstand Down//
 		case 1:
-		moveStraight(70.0, 70.0);
-		spinDeg(-90.0);
+		spinDeg(-5.0);
+		moveStraight(70.0, 60.0);
+		spinDeg(-87.0);
 		moveStraight(70.0, 20.0);
 		moveStraight(-70.0, 10.0);
 		break;
 
 		//4b. Knock kickstand Down//
 		case 2:
-		moveStraight(70.0, 53.0);
+		moveStraight(70.0, 45.0);
 		spinDeg(-45.0);
 		moveStraight(70.0, 40.0);
 		moveStraight(-70.0, 20.0);

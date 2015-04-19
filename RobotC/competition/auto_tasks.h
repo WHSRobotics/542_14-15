@@ -20,8 +20,9 @@ tHTANG angEnc;
 
 //Strictly Auto Related Variables//
 int pos = 0;
-bool rampStop = false;
+//bool rampStop = false;
 bool rampBottomCheck = false;
+int time = 0;
 
 void initializeRobot()
 {
@@ -92,18 +93,21 @@ void calibrateSensors()
 //Updates sensor values//
 task sensorPoll()
 {
+	float dT = 0.0;
 	while(true)
 	{
-		while (time1[T1] < 32)
-		{sleep(1);}
+		float ALPHA_PITCH = TAU_PITCH/(TAU_PITCH + dT);
+		float ALPHA_PITCH_COMP = 1.0 - ALPHA_PITCH;
+		//while (time1[T1] < 32)
+		//{sleep(1);}
 		time1[T1]=0;
 		readSensor(&gyroPitch);
 		pitch += gyroPitch.rotation * dT;
 		pitch *= ALPHA_PITCH;
 		readSensor(&accel);
 		pitch += ALPHA_PITCH_COMP * atan2(accel.x - x_offset, accel.z - z_offset)/DEG_TO_RAD;
-		displayTextLine(3, "%f", pitch);
 		yaw = ENC_CONV*(nMotorEncoder[tubeLift]-nMotorEncoder[driveL])/ROBOT_WID_CM/DEG_TO_RAD;
+		dT = (float)time1[T1]/1000.0;
 	}
 }
 
@@ -121,12 +125,9 @@ task display()
 		//wait1Msec(100);
 		//writeDebugStreamLine("Error: %d", nMotorEncoder[tubeLift] - nMotorEncoder[driveL]);
 		//wait1Msec(100);
-		writeDebugStreamLine("driveL : %d", motor[driveL]);
-		writeDebugStreamLine("driveR : %d", motor[driveR]);
-		wait1Msec(100);
-		//displayTextLine(2, "Pitch:%f", pitch);
-		//displayTextLine(3, "Yaw:%f", yaw);
-		//sleep(100);
+		displayTextLine(2, "Pitch:%f", pitch);
+		//displayTextLine(3, "Time:%f", dT);
+		sleep(100);
 		eraseDisplay();
 	}
 }
@@ -156,8 +157,6 @@ void moveStraight(float power, float distCm)
 	float Kd = 0.0;
 	float lastError = 0;
 	float distTravCm = 0.0;
-	//motor[driveR] = power;
-	//motor[driveL] = power;
 
 	while(true)
 	{
@@ -165,16 +164,8 @@ void moveStraight(float power, float distCm)
 		float error = nMotorEncoder[tubeLift] - nMotorEncoder[driveL];
 		float derivative = error - lastError;
 		float turn = (Kp * error)+(Kd * derivative);
-		if(rampBottomCheck = true)
-		{
-			motor[driveR] = power + turn + MOTOR_OFFSET;
-			motor[driveL] = power - turn - MOTOR_OFFSET;
-		}
-		else
-		{
-			motor[driveR] = power + turn;
-			motor[driveL] = power - turn;
-		}
+		motor[driveR] = power + turn;
+		motor[driveL] = power - turn;
 		lastError = error;
 		if((abs(distCm - distTravCm) < 1))
 		{
@@ -182,30 +173,30 @@ void moveStraight(float power, float distCm)
 			break;
 		}
 	}
-
-	rampStop = false;
-	rampBottomCheck = false;
 }
 
-//Checks the ramp//
-task rampCheck()
+void rampMove()
 {
+	sleep(3000);
 	while(true)
 	{
-		if(abs(pitch + 90.0) > 5.0)
+		if(abs(pitch + 97.5) < 3.0)
 		{
 			rampBottomCheck = true;
 		}
 		if(rampBottomCheck)
 		{
-			if(abs(pitch + 90.0) > 10.0)
-			{
-				moveStraight(70.0, 20.0);
-				rampStop = true;
-				break;
-			}
+		if(abs(pitch + 90.0) < 2.0)
+		{
+			sleep(1000);
+			stopDrive();
+			break;
 		}
+		}
+		motor[driveR] = 35;
+		motor[driveL] = 25;
 	}
+	//moveStraight(70.0, 20.0);
 }
 
 //Positive Degrees clockwise, Negative Degrees counter//
