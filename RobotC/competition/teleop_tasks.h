@@ -333,7 +333,7 @@ task DCControl()
 			if(tubesUp)
 			{
 				//AMY DANIEL ADJUST THIS TIMING AS NECESSARY//
-				sleep(6000);
+				sleep(7000);
 				tubesUp = false;
 			}
 		}

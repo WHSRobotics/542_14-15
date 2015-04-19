@@ -156,6 +156,8 @@ void moveStraight(float power, float distCm)
 	float Kd = 0.0;
 	float lastError = 0;
 	float distTravCm = 0.0;
+	//motor[driveR] = power;
+	//motor[driveL] = power;
 
 	while(true)
 	{
@@ -180,6 +182,7 @@ void moveStraight(float power, float distCm)
 			break;
 		}
 	}
+
 	rampStop = false;
 	rampBottomCheck = false;
 }
