@@ -113,30 +113,21 @@ task display()
 	disableDiagnosticsDisplay();
 	while(true)
 	{
-		displayTextLine(2, "Pitch:%f", pitch);
-		displayTextLine(3, "Yaw:%f", yaw);
-		sleep(100);
+		//writeDebugStreamLine("Pitch:%f", pitch);
+		//wait1Msec(100);
+		//writeDebugStreamLine("MotorEncoder tubeLift: %d", nMotorEncoder[tubeLift]);
+		//wait1Msec(100);
+		//writeDebugStreamLine("MotorEncoder driveL: %d", nMotorEncoder[driveL]);
+		//wait1Msec(100);
+		//writeDebugStreamLine("Error: %d", nMotorEncoder[tubeLift] - nMotorEncoder[driveL]);
+		//wait1Msec(100);
+		writeDebugStreamLine("driveL : %d", motor[driveL]);
+		writeDebugStreamLine("driveR : %d", motor[driveR]);
+		wait1Msec(100);
+		//displayTextLine(2, "Pitch:%f", pitch);
+		//displayTextLine(3, "Yaw:%f", yaw);
+		//sleep(100);
 		eraseDisplay();
-	}
-}
-
-//Checks the ramp//
-task rampCheck()
-{
-	while(true)
-	{
-		if(abs(pitch + 75.0) < 5.0)
-		{
-			rampBottomCheck = true;
-		}
-		if(rampBottomCheck)
-		{
-			if(abs(pitch + 90.0) < 3.0)
-			{
-				rampStop = true;
-				break;
-			}
-		}
 	}
 }
 
@@ -161,7 +152,7 @@ void moveStraight(float power, float distCm)
 	power = abs(power) > 80
 	? sgn(power) * 80
 : power;
-	float Kp = 1.2;
+	float Kp = 0.95; // was 1.2
 	float Kd = 0.0;
 	float lastError = 0;
 	float distTravCm = 0.0;
@@ -171,11 +162,19 @@ void moveStraight(float power, float distCm)
 		distTravCm = ENC_CONV*abs(nMotorEncoder[tubeLift] + nMotorEncoder[driveL])/2.0;
 		float error = nMotorEncoder[tubeLift] - nMotorEncoder[driveL];
 		float derivative = error - lastError;
-		float turn = (Kp * error)+(Kd*derivative);
-		motor[driveR] = power + turn;
-		motor[driveL] = power - turn;
+		float turn = (Kp * error)+(Kd * derivative);
+		if(rampBottomCheck = true)
+		{
+			motor[driveR] = power + turn + MOTOR_OFFSET;
+			motor[driveL] = power - turn - MOTOR_OFFSET;
+		}
+		else
+		{
+			motor[driveR] = power + turn;
+			motor[driveL] = power - turn;
+		}
 		lastError = error;
-		if((abs(distCm - distTravCm) < 1) || rampStop)
+		if((abs(distCm - distTravCm) < 1))
 		{
 			stopDrive();
 			break;
@@ -183,6 +182,27 @@ void moveStraight(float power, float distCm)
 	}
 	rampStop = false;
 	rampBottomCheck = false;
+}
+
+//Checks the ramp//
+task rampCheck()
+{
+	while(true)
+	{
+		if(abs(pitch + 90.0) > 5.0)
+		{
+			rampBottomCheck = true;
+		}
+		if(rampBottomCheck)
+		{
+			if(abs(pitch + 90.0) > 10.0)
+			{
+				moveStraight(70.0, 20.0);
+				rampStop = true;
+				break;
+			}
+		}
+	}
 }
 
 //Positive Degrees clockwise, Negative Degrees counter//

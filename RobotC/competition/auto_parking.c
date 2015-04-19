@@ -40,19 +40,19 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-	eraseDisplay();
-	disableDiagnosticsDisplay();
+	//eraseDisplay();
+	//disableDiagnosticsDisplay();
 	initializeSensors();
 	calibrateSensors();
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
-	//moveStraight(70.0, 30.0);
-/*
+	moveStraight(70.0, 30.0);
+
 	//1. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
-
+/*
 		writeDebugStreamLine("irSeeker.acValues[0]: %d", irSeeker.acValues[0]);
 		wait1Msec(100);
 		writeDebugStreamLine("irSeeker.acValues[1]: %d", irSeeker.acValues[1]);
@@ -62,19 +62,19 @@ task main()
 		writeDebugStreamLine("irSeeker.acValues[3]: %d", irSeeker.acValues[3]);
 		wait1Msec(100);
 		writeDebugStreamLine("irSeeker.acValues[4]: %d", irSeeker.acValues[4]);
-		wait1Msec(100);
+		wait1Msec(100);*/
 	//writeDebugStreamLine("%f", pitch);
 	//wait1Msec(100);
 		readSensor(&irSeeker);
-		if(irSeeker.acValues[3] >= 35)
+		if(irSeeker.acValues[3] >= 30)
 		{
 			irCounter1++;
 		}
-		else if(irSeeker.acValues[2] >= 40)
+		else if(irSeeker.acValues[2] >= 25)
 		{
 			irCounter2++;
 		}
-		else if(irSeeker.acValues[3] < 50)
+		else if(irSeeker.acValues[3] < 30)
 		{
 			irCounter3++;
 		}
@@ -103,15 +103,15 @@ task main()
 	displayCenteredTextLine(4, "%d", irSeeker.acValues[3]);
 	displayCenteredTextLine(5, "%d", irSeeker.acValues[4]);
 	displayCenteredTextLine(6, "%d", irSeeker.acValues[0]);
-
+*/
 	switch(pos)
 	{
 		//2a. Knock kickstand down//
 		case 1:
-		moveStraight(70.0, 65.0);
+		moveStraight(70.0, 67.0);
 		spinDeg(90.0);
-		moveStraight(100.0, 20.0);
-		moveStraight(50.0, 20.0);
+		moveStraight(100.0, 10.0);
+		moveStraight(-50.0, 20.0);
 		break;
 
 		//2b. Knock kickstand down//
@@ -139,7 +139,7 @@ task main()
 		break;
 
 	}
-*/
+/*
 	//3. Tubes Go Up//
 	plateOpen = true;
 	intakeDown = true;
@@ -148,6 +148,6 @@ task main()
 	sleep(6000);
 	//4. Head Goes Up//
 	headUp = true;
-
+*/
 	while(true){}
 }

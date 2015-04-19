@@ -38,60 +38,91 @@ task main()
 {
 	initializeRobot();
 	waitForStart();
-
 	initializeSensors();
 	calibrateSensors();
+	//startTask(display);
 	startTask(sensorPoll);
 	startTask(DCControl);
 	startTask(servoControl);
 	startTask(rampCheck);
 	//1. Go down Ramp//
-	moveStraight(50.0, 200.0);
+
+	moveStraight(25.0, 150.0);
 	//2. Move to IR checking Position//
-	/*
-	moveStraight(70.0, 45.72)
-	spinDeg(-90.0);
+	spinDeg(-85.0);
+	moveStraight(70.0, 30.0);
 
 	//3. IR Beacon Position Search//
 	for(int i = 0; i < 20; i++)
 	{
+		writeDebugStreamLine("irSeeker.acValues[0]: %d", irSeeker.acValues[0]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[1]: %d", irSeeker.acValues[1]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[2]: %d", irSeeker.acValues[2]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[3]: %d", irSeeker.acValues[3]);
+		wait1Msec(100);
+		writeDebugStreamLine("irSeeker.acValues[4]: %d", irSeeker.acValues[4]);
+		wait1Msec(100);
 		readSensor(&irSeeker);
-		if (irSeeker.acValues[2] >= 50)
+		if(irSeeker.acValues[2] >= 70)
 		{
-			pos = 1;
+			irCounter1++;
 		}
-		else if(irSeeker.acValues[2] >= 28)
+		else if(irSeeker.acValues[2] >= 28 || irSeeker.acValues[3] > 50)
 		{
-			pos = 2;
+			irCounter2++;
 		}
-		else if(irSeeker.acValues[2] == 0)
+		else if(irSeeker.acValues[2] < 28)
 		{
-			pos = 3;
+			irCounter3++;
 		}
 	}
+
+	if(irCounter1 > irCounter3 && irCounter1 > irCounter2)
+	{
+		pos = 3;
+	}
+	else if(irCounter2 > irCounter3 && irCounter2 > irCounter1)
+	{
+		pos = 2;
+	}
+	else if(irCounter3 > irCounter1 && irCounter3 > irCounter2)
+	{
+		pos = 1;
+	}
+
+	writeDebugStreamLine("irCounter1 : %d", irCounter1);
+	writeDebugStreamLine("irCounter2 : %d", irCounter2);
+	writeDebugStreamLine("irCounter3 : %d", irCounter3);
+	writeDebugStreamLine("pos: %d", pos);
 
 	switch(pos)
 	{
 		//4a. Knock kickstand Down//
 		case 1:
-		spinDeg(-45.0);
-		moveStraight(70, 122.0);
-		spinDeg(45.0);
-		moveStraight(70, 100.0);
+		moveStraight(70.0, 70.0);
+		spinDeg(-90.0);
+		moveStraight(70.0, 20.0);
+		moveStraight(-70.0, 10.0);
 		break;
 
 		//4b. Knock kickstand Down//
 		case 2:
-		moveStraight(70.0, 71.0);
+		moveStraight(70.0, 53.0);
 		spinDeg(-45.0);
-		moveStraight(70.0, 122.0)
+		moveStraight(70.0, 40.0);
+		moveStraight(-70.0, 20.0);
 		break;
 
 		//4c. Knock kickstand Down//
 		case 3:
-		moveStraight(70.0, 109.0);
-		spinDeg(-90.0);
-		moveStraight(70.0, 20.0);
+		spinDeg(-45.0);
+		moveStraight(70.0, 73.0);
+		spinDeg(45.0);
+		moveStraight(70.0, 45.0);
+		moveStraight(-70.0, 20.0);
 		break;
 
 		//4d. Go to goal//
@@ -102,7 +133,7 @@ task main()
 		spinDeg(45.0);
 		break;
 	}
-	*/
+
 	//5. Tubes Go Up//
 	//plateOpen = true;
 	//intakeDown = true;

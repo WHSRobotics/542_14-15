@@ -30,6 +30,7 @@ bool tubesUp = false;
 //Plate Angle Change Parameters//
 const int ANGLE_GAIN = 5;
 const int TILT_GAIN = 5;
+const int MOTOR_OFFSET = 3;
 const float ANGLE_MAX = 15.0;
 
 //Drive Threshold//
